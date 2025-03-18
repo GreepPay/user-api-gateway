@@ -1,0 +1,16 @@
+extend type Query @guard {
+    "Get the transaction history for the authenticated user"
+      TransactionHistory: [Transaction!] @field(resolver: "TransactionQuery@transactionHistory")
+
+}
+
+# User Mutations
+extend type Mutation {
+    "Create a new transaction"
+    createTransaction(input: CreateTransactionInput!): CreateTransactionResponse!
+        @field(resolver: " UserMutation@createTransaction")
+
+    "Soft delete a transaction"
+    softDeleteTransaction(transaction_id: int!):SoftDeleteTransactionResponse!
+        @field(resolver: "UserMutation@softDeleteTransaction")
+}

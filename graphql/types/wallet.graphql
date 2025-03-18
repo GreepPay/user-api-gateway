@@ -1,0 +1,139 @@
+# Input type for creating a new transaction.
+# This defines the structure of the data required to create a transaction.
+input CreateTransactionInput {
+    # A unique identifier for the transaction (UUID format).
+    uuid: String!
+
+    # The type of transaction: either "credit" or "debit".
+    dr_or_cr: TransactionType!
+
+    # The currency of the transaction (e.g., "USDC"). Defaults to "USDC" if not provided.
+    currency: String
+
+    # The ID of the wallet associated with the transaction.
+    wallet_id: Int!
+
+    # The ID of the user associated with the transaction.
+    user_id: Int!
+
+    # The amount of the transaction.
+    amount: String!
+
+    # The wallet balance after the transaction is completed.
+    wallet_balance: String!
+
+    # The charge ID associated with the transaction (e.g., for fees or charges).
+    charge_id: String!
+
+    # The type of entity that is chargeable (e.g., "order", "subscription").
+    chargeable_type: String!
+
+    # A description of the transaction (e.g., "Payment for order #123").
+    description: String!
+
+    # The status of the transaction. Defaults to "default" if not provided.
+    status: TransactionStatus
+
+    # The charges applied to the transaction (e.g., fees or taxes).
+    charges: String!
+
+    # A reference for the transaction (e.g., an external reference ID).
+    reference: String!
+
+    # The gateway used for the transaction (e.g., "unwind-wallet"). Defaults to "unwind-wallet" if not provided.
+    gateway: String
+
+    # The type of transaction: "received", "added", "token_converted", or "other". Defaults to "other" if not provided.
+    type: TransactionTypeEnum
+}
+
+# Response type for the `createTransaction` mutation.
+# This defines the structure of the response returned after creating a transaction.
+type CreateTransactionResponse {
+    # The transaction object that was created.
+    transaction: Transaction!
+}
+
+# Enum for the type of transaction.
+# Defines whether the transaction is a "credit" or "debit".
+# 
+enum TransactionTypeEnum
+
+
+enum TransactionType {
+    credit
+    debit
+}
+
+# Enum for the status of the transaction.
+# Defines the possible states of a transaction: "default", "pending", or "successful".
+enum TransactionStatus {
+    default
+    pending
+    successful
+}
+
+# Type representing a financial transaction.
+# This defines the structure of a transaction object.
+type Transaction {
+    # The unique identifier for the transaction.
+    id: ID!
+
+    # A unique identifier for the transaction (UUID format).
+    uuid: String!
+
+    # The type of transaction: either "credit" or "debit".
+    dr_or_cr: TransactionType!
+
+    # The currency of the transaction (e.g., "USDC").
+    currency: String!
+
+    # The ID of the wallet associated with the transaction.
+    wallet_id: Int!
+
+    # The ID of the user associated with the transaction.
+    user_id: Int!
+
+    # The amount of the transaction.
+    amount: String!
+
+    # The wallet balance after the transaction is completed.
+    wallet_balance: String!
+
+    # The charge ID associated with the transaction (e.g., for fees or charges).
+    charge_id: String!
+
+    # The type of entity that is chargeable (e.g., "order", "subscription").
+    chargeable_type: String!
+
+    # A description of the transaction (e.g., "Payment for order #123").
+    description: String!
+
+    # The status of the transaction (e.g., "default", "pending", "successful").
+    status: TransactionStatus!
+
+    # The charges applied to the transaction (e.g., fees or taxes).
+    charges: String!
+
+    # A reference for the transaction (e.g., an external reference ID).
+    reference: String!
+
+    # The gateway used for the transaction (e.g., "unwind-wallet").
+    gateway: String!
+
+    # The timestamp when the transaction was created.
+    created_at: String!
+
+    # The timestamp when the transaction was last updated.
+    updated_at: String!
+}
+
+
+# Response type for soft-deleting a transaction
+type SoftDeleteTransactionResponse {
+    # Indicates if the delete operation was successful
+    success: Boolean!
+
+    # A message describing the result of the operation
+    message: String!
+}
