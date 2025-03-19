@@ -19,11 +19,19 @@ class Wallet extends Model
      */
     protected $fillable = [
         'user_id',
-        'balance',
-        'currency',
+        'uuid',
+        'total_balance',
+        'point_balance',
         'credited_amount',
         'debited_amount',
-        'status',
+        'locked_balance',
+        'credited_point_amount',
+        'debited_point_amount',
+        'cash_point_balance',
+        'cash_per_point',
+        'wallet_account',
+        'currency',
+        'state',
     ];
 
     /**
@@ -32,9 +40,15 @@ class Wallet extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'balance' => 'decimal:2',
+        'total_balance' => 'decimal:2',
+        'point_balance' => 'decimal:2',
         'credited_amount' => 'decimal:2',
         'debited_amount' => 'decimal:2',
+        'locked_balance' => 'decimal:2',
+        'credited_point_amount' => 'decimal:2',
+        'debited_point_amount' => 'decimal:2',
+        'cash_point_balance' => 'decimal:2',
+        'cash_per_point' => 'decimal:2',
     ];
 
     /**
@@ -55,5 +69,15 @@ class Wallet extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Get all point transactions associated with the wallet.
+     *
+     * @return HasMany<PointTransaction>
+     */
+    public function pointTransactions(): HasMany
+    {
+        return $this->hasMany(PointTransaction::class);
     }
 }

@@ -1,6 +1,14 @@
 extend type Query @guard {
     "Get the transaction history for the authenticated user"
       TransactionHistory: [Transaction!] @field(resolver: "TransactionQuery@transactionHistory")
+      
+      "Get the transaction history for the authenticated user"
+      PointTransactionHistory: [PointTransaction!] @field(resolver: "TransactionQuery@pointTransactionHistory")
+      
+     "Get the authenticated user wallet"
+     getuserWallet: [Wallet!] @field(resolver:"UserQuery@getuserWallet")
+    
+
 
 }
 
@@ -12,5 +20,24 @@ extend type Mutation {
 
     "Soft delete a transaction"
     softDeleteTransaction(transaction_id: int!):SoftDeleteTransactionResponse!
-        @field(resolver: "UserMutation@softDeleteTransaction")
+        @field(resolver: "UserMutation@softDeleteTransaction")        
+        
+    "Create a new transaction"
+    createPointTransaction(input: CreatePointTransactionInput!): CreatePointTransactionResponse!
+        @field(resolver: " UserMutation@createPointTransaction")
+        
+    "Soft delete a transaction"
+    softDeletePointTransaction(point_transaction_id: int!):SoftDeletePointTransactionResponse!
+        @field(resolver: "UserMutation@softDeletePointTransaction")  
+    
+    "Create a new wallet"
+     createWallet(input: createWalletInput!) :CreateWalletResponse!
+        @field(resolver: " UserMutation@createWallet")
+         
+    "Soft delete a transaction"
+    softDeleteWallet(transaction_id: int!):SoftDeleteWalletResponse!
+        @field(resolver: "UserMutation@softDeleteWallet")        
+             
+        
+    
 }

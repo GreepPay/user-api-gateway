@@ -43,8 +43,7 @@ input CreateTransactionInput {
     # The gateway used for the transaction (e.g., "unwind-wallet"). Defaults to "unwind-wallet" if not provided.
     gateway: String
 
-    # The type of transaction: "received", "added", "token_converted", or "other". Defaults to "other" if not provided.
-    type: TransactionTypeEnum
+
 }
 
 # Response type for the `createTransaction` mutation.
@@ -126,11 +125,196 @@ type Transaction {
 
     # The timestamp when the transaction was last updated.
     updated_at: String!
+    
+    # The wallet that own the transaction
+    wallet: Wallet! @belongsTo
 }
 
 
 # Response type for soft-deleting a transaction
 type SoftDeleteTransactionResponse {
+    # Indicates if the delete operation was successful
+    success: Boolean!
+
+    # A message describing the result of the operation
+    message: String!
+}
+
+
+
+input CreatePointTransactionInput{
+  # UUID for external identification
+  uuid: String!
+
+  # Type of transaction (credit or debit)
+  dr_or_cr: TransactionType!
+
+  # ID of the wallet
+  wallet_id: Int!
+
+  # ID of the user
+  user_id: Int!
+
+  # Transaction amount
+  amount: String!
+
+  # Point balance after transaction
+  point_balance: String!
+  
+  # Charge ID
+  charge_id: String!
+
+  
+  # State
+  state: TransactionState!
+  # Chargeable type
+  chargeable_type: String!
+
+  # Transaction description
+  description: String!
+
+  # Transaction status
+  status: TransactionStatus!
+
+  # Transaction reference
+  reference: String!
+
+  # Extra data, nullable
+  extra_data: String
+
+  # Currency, default is 'USDC'
+  currency: String = "USDC"
+  
+}
+
+# Define enums for dr_or_cr and status
+enum TransactionType {
+  credit
+  debit
+}
+
+enum TransactionStatus {
+  default
+  pending
+  successful
+}
+
+
+# Response type for soft-deleting a pointtransaction
+type SoftDeleteTransactionResponse {
+    # Indicates if the delete operation was successful
+    success: Boolean!
+
+    # A message describing the result of the operation
+    message: String!
+}
+
+
+
+type PointTransaction {
+  id: ID! # Unique identifier for the transaction
+  uuid: String! # UUID for external identification
+  dr_or_cr: TransactionType! # Type of transaction (credit or debit)
+  wallet_id: Int! # ID of the wallet
+  user_id: Int! # ID of the user
+  amount: Float! # Transaction amount (decimal mapped to Float in GraphQL)
+  point_balance: Float! # Point balance after transaction (decimal mapped to Float)
+  charge_id: String! # Charge ID
+  chargeable_type: String! # Chargeable type
+  state:TransactionState!
+  description: String! # Transaction description
+  status: TransactionStatus! # Transaction status (default, pending, or successful)
+  reference: String! # Transaction reference
+  extra_data: String # Extra data, nullable
+  currency: String! # Currency, default is 'USDC'
+  created_at: String! # Timestamp when the transaction was created (Date mapped to String)
+  updated_at: String! # Timestamp when the transaction was last updated (Date mapped to String)
+  wallet: Wallet!
+
+}
+
+# Define enums for dr_or_cr, state, and status
+enum TransactionType {
+  credit
+  debit
+}
+
+enum TransactionState {
+  active
+  archived
+}
+
+enum TransactionStatus {
+  default
+  pending
+  successful
+}
+
+
+
+type Wallet {
+  id: ID! # Unique identifier for the wallet
+  uuid: String! # UUID for external identification
+  total_balance: String! # Total balance of the wallet
+  point_balance: String! # Point balance of the wallet
+  credited_amount: String! # Total credited amount
+  debited_amount: String! # Total debited amount
+  locked_balance: String! # Locked balance (e.g., for pending transactions)
+  credited_point_amount: String! # Total credited point amount
+  debited_point_amount: String! # Total debited point amount
+  cash_point_balance: String! # Cash point balance
+  cash_per_point: String! # Conversion rate of cash per point
+  user_id: Int! # ID of the user associated with the wallet
+  wallet_account: String # Wallet account (nullable)
+  currency: String! # Currency of the wallet (default: "USDC")
+  state: WalletState! # State of the wallet (active or archived)
+  transactions: [Transaction!] @hasMany# List of transactions associated with the wallet
+  point_transactions:  [PointTransaction!]@hasMany # List of point transactions associated with the wallet
+  created_at: String! # Timestamp when the wallet was created
+  updated_at: String! # Timestamp when the wallet was last updated
+}
+
+# Define enums for wallet state
+enum WalletState {
+  active
+  archived
+}
+
+
+
+# Response type for the `createTransaction` mutation.
+# This defines the structure of the response returned after creating a transaction.
+type CreatePointTransactionResponse {
+    # The transaction object that was created.
+    transaction: Transaction!
+}
+
+
+input WalletInput {
+  user_id: ID!
+  total_balance: String
+  point_balance: String
+  credited_amount: String
+  debited_amount: String
+  locked_balance: String
+  credited_point_amount: String
+  debited_point_amount: String
+  cash_point_balance: String
+  cash_per_point: String
+  wallet_account: String
+  currency: String
+}
+
+# Response type for the `CreateWallet` mutation.
+# This defines the structure of the response returned after creating a wallet.
+type CreateWalletResponse {
+    # The  wallet object that was created.
+    wallet: Wallet!
+}
+
+
+# Response type for soft-deleting a Wallet
+type SoftDeleteWalletResponse {
     # Indicates if the delete operation was successful
     success: Boolean!
 
