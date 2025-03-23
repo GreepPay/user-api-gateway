@@ -1,43 +1,68 @@
 extend type Query @guard {
-    "Get the transaction history for the authenticated user"
-      TransactionHistory: [Transaction!] @field(resolver: "TransactionQuery@transactionHistory")
-      
-      "Get the transaction history for the authenticated user"
-      PointTransactionHistory: [PointTransaction!] @field(resolver: "TransactionQuery@pointTransactionHistory")
-      
-     "Get the authenticated user wallet"
-     getuserWallet: [Wallet!] @field(resolver:"UserQuery@getuserWallet")
-    
 
+    "Get a paginated mix of all the authenticated user's transactions and point transactions"
+    GetTransactions: [TransactionOrPointTransaction] @field(resolver: "UserQuery@GetTransactions")
 
+    "Get a single transaction by UUID"
+    GetSingleTransaction(uuid: String!): Transaction @field(resolver: "UserQuery@GetSingleTransaction")
+
+    "Get a single point transaction by UUID"
+    GetSinglePointTransaction(uuid: String!): PointTransaction @field(resolver: "UserQuery@GetSinglePointTransaction")
+
+    "Get a paginated list of beneficiaries for the authenticated user"
+    GetBeneficiaries: [Beneficiary] @field(resolver: "UserQuery@GetBeneficiaries")
+
+    "Get the currently supported on-ramp currencies"
+    GetOnRampCurrencies: [String] @field(resolver: "UserQuery@GetOnRampCurrencies")
+
+    "Search users by a query string"
+    SearchUsers: [User] @field(resolver: "UserQuery@SearchUsers")
+
+    "Get a paginated list of notifications for the authenticated user"
+    GetNotifications: [Notification] @field(resolver: "UserQuery@GetNotifications")
+
+    "Get the current exchange rate between two currencies"
+    GetExchangeRate: Float @field(resolver: "UserQuery@GetExchangeRate")
 }
 
-# User Mutations
-extend type Mutation {
-    "Create a new transaction"
-    createTransaction(input: CreateTransactionInput!): CreateTransactionResponse!
-        @field(resolver: " UserMutation@createTransaction")
+# # User Mutations
+# extend type Mutation {
+#     "Create a new transaction"
+#     createTransaction(input: CreateTransactionInput!): CreateTransactionResponse!
+#         @field(resolver: " UserMutation@createTransaction")
 
-    "Soft delete a transaction"
-    softDeleteTransaction(transaction_id: int!):SoftDeleteTransactionResponse!
-        @field(resolver: "UserMutation@softDeleteTransaction")        
+#     "Soft delete a transaction"
+#     softDeleteTransaction(transaction_id: int!):SoftDeleteTransactionResponse!
+#         @field(resolver: "UserMutation@softDeleteTransaction")        
         
-    "Create a new transaction"
-    createPointTransaction(input: CreatePointTransactionInput!): CreatePointTransactionResponse!
-        @field(resolver: " UserMutation@createPointTransaction")
+#     "Create a new transaction"
+#     createPointTransaction(input: CreatePointTransactionInput!): CreatePointTransactionResponse!
+#         @field(resolver: " UserMutation@createPointTransaction")
         
-    "Soft delete a transaction"
-    softDeletePointTransaction(point_transaction_id: int!):SoftDeletePointTransactionResponse!
-        @field(resolver: "UserMutation@softDeletePointTransaction")  
+#     "Soft delete a transaction"
+#     softDeletePointTransaction(point_transaction_id: int!):SoftDeletePointTransactionResponse!
+#         @field(resolver: "UserMutation@softDeletePointTransaction")  
     
-    "Create a new wallet"
-     createWallet(input: createWalletInput!) :CreateWalletResponse!
-        @field(resolver: " UserMutation@createWallet")
+#     "Create a new wallet"
+#      createWallet(input: createWalletInput!) :CreateWalletResponse!
+#         @field(resolver: " UserMutation@createWallet")
          
-    "Soft delete a transaction"
-    softDeleteWallet(transaction_id: int!):SoftDeleteWalletResponse!
-        @field(resolver: "UserMutation@softDeleteWallet")        
+#     "Soft delete a transaction"
+#     softDeleteWallet(transaction_id: int!):SoftDeleteWalletResponse!
+#         @field(resolver: "UserMutation@softDeleteWallet")        
              
-        
     
-}
+#     "Create a new UserBank"
+#     createUserBank(input: createUserBankInput!) :createUserBankResponse!
+#         @field(resolver: "UserMutation@createUserBank")
+        
+#     "Soft delete a UserBank"
+#     softDeleteUserBank(transaction_id: int!):softDeleteUserBankResponse!
+#         @field(resolver: "UserMutation@softUserBank")
+# }
+# 
+
+
+
+
+

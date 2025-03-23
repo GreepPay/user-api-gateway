@@ -1,5 +1,6 @@
-<?php
 
+<?php
+/*
 namespace App\GraphQL\Mutations;
 
 use App\Exceptions\GraphQLException;
@@ -81,7 +82,7 @@ final class UserMutation
 
     /**
      * Convert DateTime string to Carbon instance.
-     */
+     
     private function parseDateTime(?string $date): ?string
     {
         return $date ? Carbon::parse($date)->format('Y-m-d H:i:s') : null;
@@ -111,4 +112,13 @@ final class UserMutation
 
         return $response["data"]["deleteProfile"] ?? null;
     }
-}
+    
+} 
+
+/*
+This is a multi-line comment in PHP.
+It spans multiple lines.
+Everything inside is ignored by the PHP interpreter.
+*/
+
+

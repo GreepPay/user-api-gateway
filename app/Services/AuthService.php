@@ -4,11 +4,21 @@ namespace App\Services;
 
 use App\Datasource\NetworkHandler;
 
+use Illuminate\Http\Request;
+
 class AuthService
 {
     protected $serviceUrl;
     protected $authNetwork;
 
+    /**
+     * construct
+     *
+     * @param bool $useCache
+     * @param array $headers
+     * @param string $apiType
+     * @return mixed
+     */
     public function __construct(
         $useCache = true,
         $headers = [],
@@ -27,18 +37,101 @@ class AuthService
         );
     }
 
-    public function addUser($request)
+    /**
+     * Get the authenticated user.
+     *
+     * @return mixed
+     */
+    public function authUser()
+    {
+        return $this->authNetwork->get("/v1/auth/me");
+    }
+
+    /**
+     * Create a new user.
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function saveUser(Request $request)
     {
         return $this->authNetwork->post("/v1/auth/users", $request->all());
     }
 
-    public function loginUser($request)
+    /**
+     * Authenticate a user.
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function authenticateUser(Request $request)
     {
         return $this->authNetwork->post("/v1/auth/login", $request->all());
     }
 
-    public function authUser()
+    /**
+     * Reset user OTP.
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function resetUserOtp(Request $request)
     {
-        return $this->authNetwork->get("/v1/auth/me");
+        return $this->authNetwork->post("/v1/auth/reset-otp", $request->all());
+    }
+
+    /**
+     * Verify user OTP.
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function verifyUserOtp(Request $request)
+    {
+        return $this->authNetwork->post("/v1/auth/verify-otp", $request->all());
+    }
+
+    /**
+     * Update user password.
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function updatePassword(Request $request)
+    {
+        return $this->authNetwork->post("/v1/auth/update-password", $request->all());
+    }
+
+    /**
+     * Update user profile.
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function updateUserProfile(Request $request)
+    {
+        return $this->authNetwork->post("/v1/auth/update-profile", $request->all());
+    }
+
+    /**
+     * Log out the authenticated user.
+     *
+     * @return mixed
+     */
+    public function logOut()
+    {
+        return $this->authNetwork->post("/v1/auth/logout");
+    }
+
+    /**
+     * Delete a user.
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function deleteUser(Request $request)
+    {
+        $userId = $request->route('id'); // Extract user ID from the request
+        return $this->authNetwork->delete("/v1/auth/users/{$userId}");
     }
 }

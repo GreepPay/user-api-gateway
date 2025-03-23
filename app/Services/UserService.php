@@ -8,6 +8,14 @@ class UserService
 {
     protected $serviceUrl;
     protected NetworkHandler $userNetwork;
+    /**
+     * construct
+     *
+     * @param bool $useCache
+     * @param array $headers
+     * @param string $apiType
+     * @return mixed
+     */
 
     public function __construct(
         bool $useCache = true,
@@ -42,4 +50,20 @@ class UserService
     {
         return $this->userNetwork->delete("/v1/profiles", $request->all());
     }
+    
+    /**
+     * Search users by name or email.
+     *
+     * @param string $query
+     * @return array
+     */
+    public function searchUsers(string $query): array
+    {
+        return User::where('name', 'like', "%{$query}%")
+            ->orWhere('email', 'like', "%{$query}%")
+            ->limit(10)
+            ->get()
+            ->toArray();
+    }
+
 }

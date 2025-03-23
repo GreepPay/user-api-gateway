@@ -285,3 +285,36 @@ type VerificationStatusResponse {
     message: String!
     status: String!
 }
+
+
+type Beneficiary {
+    # The unique identifier for the beneficiary.
+    id: ID!
+
+    # The UUID of the user associated with this beneficiary.
+    user_uuid: ID!
+
+    # The name of the beneficiary.
+    name: String!
+
+    # The name of the beneficiary's bank.
+    bank_name: String!
+
+    # The beneficiary's account number.
+    account_number: String!
+
+    # The bank code associated with the beneficiary's bank.
+    bank_code: String!
+
+    # The beneficiary's email (nullable).
+    email: String
+
+    # The currency in which the beneficiary operates (nullable).
+    currency: String
+
+    # The timestamp when the beneficiary was created.
+    created_at: String!
+
+    # The timestamp when the beneficiary was last updated.
+    updated_at: String!
+}

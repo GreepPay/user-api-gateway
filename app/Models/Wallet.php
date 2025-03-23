@@ -31,7 +31,6 @@ class Wallet extends Model
         'cash_per_point',
         'wallet_account',
         'currency',
-        'state',
     ];
 
     /**

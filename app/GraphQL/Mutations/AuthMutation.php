@@ -1,60 +1,172 @@
 <?php
 
 namespace App\GraphQL\Mutations;
-use App\Exceptions\GraphQLException;
-use App\Models\User;
+
 use App\Services\AuthService;
-use Illuminate\Http\Request;
+use App\Services\NotificationService;
+use App\Services\UserService;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
-final class AuthMutation
+final class AuthMutator
 {
-    protected AuthService $authService;
+    protected $authService;
+    protected $notificationService;
+    protected $userService;
 
-    public function __construct(AuthService $authService)
-    {
+    public function __construct(
+        AuthService $authService,
+        NotificationService $notificationService,
+        UserService $userService
+    ) {
         $this->authService = $authService;
+        $this->notificationService = $notificationService;
+        $this->userService = $userService;
     }
-    public function signIn($_, array $args)
+
+    /**
+     * Sign up a new user.
+     *
+     * @param mixed $_
+     * @param array $args
+     * @return User
+     */
+    public function SignUp($_, array $args): User
     {
-        // authenticate user
-        $authResponse = $this->authService->loginUser(
-            new Request([
-                "username" => $args["username"],
-                "password" => $args["password"]
-            ])
+        $user = $this->userService->createUser([
+            'first_name' => $args['first_name'],
+            'last_name' => $args['last_name'],
+            'email' => $args['email'],
+            'password' => Hash::make($args['password']),
+            'state' => $args['state'],
+            'country' => $args['country'],
+            'default_currency' => $args['default_currency'],
+            'uuid' => Str::uuid(),
+        ]);
+
+        // Send welcome notification
+        $this->notificationService->sendWelcomeNotification($user->id);
+
+        return $user;
+    }
+
+    /**
+     * Verify user identity.
+     *
+     * @param mixed $_
+     * @param array $args
+     * @return User
+     */
+    public function VerifyIdentity($_, array $args): User
+    {
+        $user = $this->userService->verifyIdentity(
+            $args['user_uuid'],
+            $args['id_number'],
+            $args['id_country'],
+            $args['id_type']
         );
 
-        return $authResponse;
+        return $user;
     }
 
-    public function signUp($_, array $args)
+    /**
+     * Resend email OTP.
+     *
+     * @param mixed $_
+     * @param array $args
+     * @return bool
+     */
+    public function ResendEmailOTP($_, array $args): bool
     {
-        $requiredFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'password', 'role'];
-        foreach ($requiredFields as $field) {
-            if (!isset($args[$field])) {
-                throw new GraphQLException("Missing required field: {$field}");
-            }
-        }
+        $user = $this->userService->findUserByEmail($args['email']);
 
-        $payload = [
-            'firstName' => $args['firstName'],
-            'lastName' => $args['lastName'],
-            'email' => $args['email'],
-            'phoneNumber' => $args['phoneNumber'],
-            'password' => $args['password'],
-            'role' => $args['role'],
-            'ssoId' => $args['ssoId'],
-            'otp' => $args['otp'],
-            'isSso' => $args['isSso'],
-            'ignoreError' => $args['ignoreError'],
-        ];
+        // Resend OTP via NotificationService
+        $this->notificationService->resendOTP($user->id);
 
-        // Create user
-        $authResponse = $this->authService->addUser(new Request($payload));
-
-        return $authResponse;
+        return true;
     }
 
+    /**
+     * Verify OTP.
+     *
+     * @param mixed $_
+     * @param array $args
+     * @return User
+     */
+    public function VerifyOTP($_, array $args): User
+    {
+        $user = $this->authService->verifyOTP(
+            $args['email'],
+            $args['otp_code'],
+            $args['user_uuid']
+        );
 
+        return $user;
+    }
 
+    /**
+     * Sign in a user.
+     *
+     * @param mixed $_
+     * @param array $args
+     * @return array
+     */
+    public function SignIn($_, array $args): array
+    {
+        $response = $this->authService->signIn(
+            $args['email'],
+            $args['password']
+        );
+
+        return $response;
+    }
+
+    /**
+     * Send reset password PIN.
+     *
+     * @param mixed $_
+     * @param array $args
+     * @return bool
+     */
+    public function SendResetPasswordPin($_, array $args): bool
+    {
+        $user = $this->userService->findUserByEmail($args['email']);
+
+        // Send reset password PIN via NotificationService
+        $this->notificationService->sendResetPasswordPin($user->id);
+
+        return true;
+    }
+
+    /**
+     * Reset user password.
+     *
+     * @param mixed $_
+     * @param array $args
+     * @return bool
+     */
+    public function ResetPassword($_, array $args): bool
+    {
+        return $this->authService->resetPassword(
+            $args['user_uuid'],
+            $args['otp_code'],
+            $args['new_password']
+        );
+    }
+
+    /**
+     * Update user password.
+     *
+     * @param mixed $_
+     * @param array $args
+     * @return bool
+     */
+    public function UpdateUserPassword($_, array $args): bool
+    {
+        return $this->authService->updatePassword(
+            $args['old_password'],
+            $args['new_password']
+        );
+    }
 }

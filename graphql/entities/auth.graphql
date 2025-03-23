@@ -1,27 +1,50 @@
 # Auth Queries
 extend type Query {
-    "Get the authenticated user"
-    AuthUser: User @field(resolver: "AuthQuery@authUser")
+    "Get the authenticated user with wallet and profile info"
+    GetAuthUser: User @field(resolver: "UserQuery@GetAuthUser")
 
-    "Get a single user"
-    SingleUser(username: String! @eq): User @first
 }
 
 # Auth mutations
 extend type Mutation {
-    "Sign in user"
-    SignIn(password: String!, username: String! @trim): UserResponse!
-        @field(resolver: "AuthMutation@signIn")
+    "Sign up a new user"
     SignUp(
-        firstName: String!
-        lastName: String!
-        email: String! @trim
-        phoneNumber: String!
+        email: String!
         password: String!
-        role: String!
-        ssoId: String
+        username: String
+        type: String!
+    ): User! @field(resolver: "AuthMutator@signUp")
+
+    "Sign in a user"
+    SignIn(
+        email: String!
+        password: String!
+    ): AuthResponse! @field(resolver: "AuthMutator@signIn")
+
+    "Verify user email using OTP"
+    VerifyEmailOTP(
+        email: String!
+        otp: String!
+    ): User! @field(resolver: "AuthMutator@verifyEmailOTP")
+
+    "Resend verification email to user"
+    ResendVerifyEmail(
+        user_uuid: String!
+    ): Boolean! @field(resolver: "AuthMutator@resendVerifyEmail")
+
+    "Send reset password email to user"
+    SendResetPasswordEmail(
+        email: String!
+    ): Boolean! @field(resolver: "AuthMutator@sendResetPasswordEmail")
+
+    "Update user password"
+    UpdatePassword(
+        user_uuid: String!
+        password: String!
+        old_password: String!
         otp: String
-        isSso: Boolean!
-        ignoreError: Boolean!
-    ): UserResponse! @field(resolver: "AuthMutation@signUp")
+    ): Boolean! @field(resolver: "AuthMutator@updatePassword")
+
+    "Sign out the authenticated user"
+    SignOut: Boolean! @field(resolver: "AuthMutator@signOut")
 }

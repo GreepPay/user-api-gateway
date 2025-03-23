@@ -1,0 +1,31 @@
+type Notification {
+    # The unique identifier for the notification.
+    id: ID!
+
+    # The ID of the authenticated user receiving the notification.
+    auth_user_id: String!
+
+    # The type of notification (e.g., "email" or "push").
+    type: String!
+
+    # The title of the notification.
+    title: String!
+
+    # The content/body of the notification.
+    content: String!
+
+    # The recipient's email (nullable, only for email notifications).
+    email: String
+
+    # Whether the notification has been read.
+    is_read: Boolean!
+
+    # The delivery status of the notification (e.g., "pending", "sent", "delivered", "failed").
+    delivery_status: String!
+
+    # The timestamp when the notification was created.
+    created_at: String!
+
+    # The timestamp when the notification was last updated.
+    updated_at: String!
+}
