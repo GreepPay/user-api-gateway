@@ -50,21 +50,12 @@ class AuthService
     /**
      * Create a new user.
      *
-     * @param Request $request
+     * @param array $request
      * @return mixed
      */
-    public function saveUser(Request $request)
+    public function saveUser(array $request)
     {
-        return $this->authNetwork->post("/v1/auth/users", [
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'state' => $data['state'],
-            'country' => $data['country'],
-            'default_currency' => $data['default_currency'],
-            'uuid' => Str::uuid(),
-        ]);
+        return $this->authNetwork->post("/v1/auth/users", $request);
     }
 
     /**
@@ -84,11 +75,9 @@ class AuthService
      * @param Request $request
      * @return mixed
      */
-    public function sendResetPasswordPin(string $email)
+    public function sendResetPasswordPin($request)
     {
-        return $this->authNetwork->post("/v1/auth/reset-otp", [
-               'email' => $email,
-           ]);
+        return $this->authNetwork->post("/v1/auth/reset-otp", $request->all()); 
     }
 
     /**
@@ -110,52 +99,38 @@ class AuthService
      */
     public function updatePassword(Request $request)
     {
-        return $this->authNetwork->post("/v1/auth/update-password", $request->all());
+        return $this->authNetwork->post(
+            "/v1/auth/update-password",
+            $request->all()
+        );
     }
 
     /**
      * Update user profile.
      *
-     * @param array $data
+     * @param Request $request
      * @return mixed
      */
-    public function updateUserProfile(array $data)
+    public function updateUserProfile(Request $request)
     {
-        return $this->authNetwork->put("/v1/auth/update-profile", [
-            'first_name' => $data['first_name'] ?? null,
-            'last_name' => $data['last_name'] ?? null,
-            'profile_photo' => $data['profile_photo'] ?? null,
-            'state' => $data['state'] ?? null,
-            'country' => $data['country'] ?? null,
-        ]);
+        return $this->authNetwork->put("/v1/auth/update-profile", $request->all()); 
+          
     }
-  
 
     /**
      * Resend email OTP.
      *
-     * @param array $data
+     * @param Request $request
      * @return mixed
      */
-    public function resendEmailOTP(array $data)
+    public function resendEmailOTP(Request $request)
     {
-        return $this->authNetwork->post("/v1/auth/resend-otp", [
-            'email' => $data['email'],
-        ]);
+        return $this->authNetwork->post("/v1/auth/resend-otp", $request->all()); 
+        
     }
-    
-    
-    /**
-     * Find a user by email.
-     *
-     * @param string $email
-     * @return User|null
-     */
-    public function findUserByEmail(string $email): ?User
-    {
-        return User::where('email', $email)->first();
-    }
-    
+
+
+
     /**
      * Log out the authenticated user.
      *
@@ -165,36 +140,36 @@ class AuthService
     {
         return $this->authNetwork->post("/v1/auth/logout");
     }
-    
+
     /**
      * Reset user password using OTP.
      *
-     * @param string $userUuid
-     * @param string $otpCode
-     * @param string $newPassword
+     * 
+     * @param Request $request
      * @return bool
      */
-    public function resetPassword(string $userUuid, string $otpCode, string $newPassword): bool
-    {
+    public function resetPassword(Request $request): bool {
         // Find the user by UUID
-        $user = User::where('uuid', $userUuid)->first();
-    
+        $user = User::where("uuid", $userUuid)->first();
+        $userUuid = $request->input('user_uuid');
+        $otpCode = $request->input('otp_code');
+        $newPassword = $request->input('new_password'); 
+
         if (!$user) {
             throw new \Exception("User not found.");
         }
-    
+
         // Verify the OTP code (you can use your OTP verification logic here)
         if (!$this->verifyOtp($user->id, $otpCode)) {
             throw new \Exception("Invalid OTP code.");
         }
-    
+
         // Update the user's password
         $user->password = Hash::make($newPassword);
         $user->save();
-    
+
         return true;
     }
-    
 
     /**
      * Delete a user.
@@ -204,7 +179,7 @@ class AuthService
      */
     public function deleteUser(Request $request)
     {
-        $userId = $request->route('id'); // Extract user ID from the request
+        $userId = $request->route("id"); // Extract user ID from the request
         return $this->authNetwork->delete("/v1/auth/users/{$userId}");
     }
 }

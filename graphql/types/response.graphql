@@ -83,3 +83,28 @@ type CreateUserBankResponse {
     # The transaction object that was created.
     transaction: Transaction!
 }
+
+
+
+type TopupResponse {
+    status: String! # e.g., "success", "failed", "pending"
+    transaction_id: ID! # Unique identifier for the transaction
+    amount: Float! # Top-up amount
+    currency: String! # Currency used for the top-up
+    payment_metadata: JSON # Any additional metadata related to the payment
+    message: String # A descriptive message about the transaction
+}
+
+
+type AuthResponse {
+    token: String! # JWT token for authentication
+    user: User! # Authenticated user details
+
+}
+
+
+type UpdateProfileResponse {
+    success: Boolean!
+    message: String!
+    userProfile: UserProfile
+}

@@ -62,32 +62,7 @@ type User {
     token: String
 }
 
-"Profile of a person who uses Greep."
-type UserProfile {
-    "Unique primary key."
-    id: ID!
 
-    "The authenticated user ID."
-    auth_user_id: String!
-
-    "The user type, can be 'Business', 'Rider', or 'Customer'."
-    user_type: UserType!
-
-    "The user profile picture URL."
-    profile_picture: String
-
-    "The verification status of the profile."
-    verification_status: VerificationStatus!
-
-    "When the profile was created."
-    created_at: DateTime!
-
-    "When the profile was last updated."
-    updated_at: DateTime!
-
-    "Profile details based on the user type."
-    profileData: ProfileData!
-}
 
 # Business profile details.
 type Business {
@@ -211,14 +186,6 @@ enum VerificationStatus {
     Rejected
 }
 
-input UserProfileInput {
-    auth_user_id: String!
-    user_type: UserType!
-    profile_picture: String
-    business: BusinessInput
-    rider: RiderInput
-    customer: CustomerInput
-}
 
 input BusinessInput {
     registration_number: String!
@@ -250,16 +217,7 @@ input CustomerInput {
     location: String!
 }
 
-type ProfileData {
-    registration_number: String
-    logo: String
-    location: String
-    banner: String
-    description: String
-    website: String
-    resident_permit: String
-    passport: String
-}
+
 
 input VerificationInput {
     auth_user_id: String!
@@ -317,4 +275,48 @@ type Beneficiary {
 
     # The timestamp when the beneficiary was last updated.
     updated_at: String!
+}
+
+
+
+
+input ProfileDataInput {
+    registration_number: String
+    logo: String
+    location: String
+    banner: String
+    description: String
+    website: String
+    resident_permit: String
+    passport: String
+}
+
+type UserProfile {
+    user_type: String!
+    profile_picture: String
+    profileData: ProfileData
+}
+
+type ProfileData {
+    registration_number: String
+    logo: String
+    location: String
+    banner: String
+    description: String
+    website: String
+    resident_permit: String
+    passport: String
+}
+
+
+
+extend type Mutation @guard {
+    """
+    Update a user's profile with detailed information
+    """
+    UpdateProfile(
+        user_type: String!,
+        profile_picture: String,
+        profileData: ProfileDataInput
+    ): UpdateProfileResponse! @field(resolver: "UserMutator@updateProfile")
 }

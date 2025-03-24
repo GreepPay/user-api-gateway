@@ -6,7 +6,6 @@ use App\Services\AuthService;
 use App\Services\NotificationService;
 use App\Services\UserService;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 final class AuthMutator
@@ -15,14 +14,11 @@ final class AuthMutator
     protected $notificationService;
     protected $userService;
 
-    public function __construct(
-        AuthService $authService,
-        NotificationService $notificationService,
-        UserService $userService
-    ) {
-        $this->authService = $authService;
-        $this->notificationService = $notificationService;
-        $this->userService = $userService;
+    public function __construct()
+    {
+        $this->authService = new AuthService();
+        $this->notificationService = new NotificationService();
+        $this->userService = new UserService();
     }
 
     /**
@@ -34,16 +30,19 @@ final class AuthMutator
      */
     public function SignUp($_, array $args): User
     {
-        $user = $this->authService->saveUser([
-            'first_name' => $args['first_name'],
-            'last_name' => $args['last_name'],
-            'email' => $args['email'],
-            'password' => Hash::make($args['password']),
-            'state' => $args['state'],
-            'country' => $args['country'],
-            'default_currency' => $args['default_currency'],
-            'uuid' => Str::uuid(),
-        ]);
+        $user = $this->authService->saveUser(
+          new Request([
+            "first_name" => $args["first_name"],
+            "last_name" => $args["last_name"],
+            "email" => $args["email"],
+            "password" => $args["password"],
+            "state" => $args["state"],
+            "country" => $args["country"],
+            "default_currency" => $args["default_currency"],
+            "uuid" => Str::uuid(),
+        ])
+        
+        );
 
         return $user;
     }
@@ -58,10 +57,12 @@ final class AuthMutator
     public function VerifyIdentity($_, array $args): User
     {
         $user = $this->userService->verifyIdentity(
-            $args['user_uuid'],
-            $args['id_number'],
-            $args['id_country'],
-            $args['id_type']
+            new Request([
+            $args["user_uuid"],
+            $args["id_number"],
+            $args["id_country"],
+            $args["id_type"]
+            ])
         );
 
         return $user;
@@ -76,7 +77,12 @@ final class AuthMutator
      */
     public function ResendEmailOTP($_, array $args): bool
     {
-        $user = $this->authService->findUserByEmail($args['email']);
+        $user = $this->authService->resendEmailOTP(      
+        new Request([
+           "email" =>  $args["email"]
+        ])
+        
+       );
 
         return true;
     }
@@ -91,15 +97,17 @@ final class AuthMutator
     public function VerifyOTP($_, array $args): User
     {
         $user = $this->authService->verifyOTP(
-            $args['email'],
-            $args['otp_code'],
-            $args['user_uuid']
+          new Request([
+           "email" => $args["email"],
+           "otp_code" => $args["otp_code"],
+           "user_uuid"=> $args["user_uuid"]
+           
+                ])
         );
 
         return $user;
     }
 
-    
     /**
      * Send reset password PIN.
      *
@@ -110,7 +118,10 @@ final class AuthMutator
     public function SendResetPasswordPin($_, array $args): bool
     {
         return $this->authService->sendResetPasswordPin(
-            $args['email']
+         new Request([
+            "email" =>  $args["email"]
+         ])
+         
         );
     }
 
@@ -124,9 +135,12 @@ final class AuthMutator
     public function SignIn($_, array $args): array
     {
         $response = $this->authService->signIn(
-            $args['email'],
-            $args['password']
-        );
+        new Request([
+            "email" => $args["email"],
+           "password" =>  $args["password"],
+       ])
+       
+       );
 
         return $response;
     }
@@ -141,14 +155,15 @@ final class AuthMutator
     public function ResetPassword($_, array $args): bool
     {
         return $this->authService->resetPassword(
-            $args['user_uuid'],
-            $args['otp_code'],
-            $args['new_password']
+         new Request([
+             "user_uuid" => $args["user_uuid"],
+            "otp_code" =>  $args["otp_code"],
+            "new_password" =>  $args["new_password"],
+            
+        ])
         );
     }
-    
-    
-    
+
     /**
      * Update user profile.
      *
@@ -158,15 +173,16 @@ final class AuthMutator
      */
     public function updateUserProfile($_, array $args): User
     {
-        $user = $this->authService->updateProfile([
-            'user_uuid' => $args['user_uuid'],
-            'first_name' => $args['first_name'] ?? null,
-            'last_name' => $args['last_name'] ?? null,
-            'profile_photo' => $args['profile_photo'] ?? null,
-            'state' => $args['state'] ?? null,
-            'country' => $args['country'] ?? null,
-        ]);
-    
+        $user = $this->authService->updateProfile(
+         new Request([
+            "user_uuid" => $args["user_uuid"],
+            "first_name" => $args["first_name"] ?? null,
+            "last_name" => $args["last_name"] ?? null,
+            "profile_photo" => $args["profile_photo"] ?? null,
+            "state" => $args["state"] ?? null,
+            "country" => $args["country"] ?? null,
+        ])
+       );
         return $user;
     }
 
@@ -180,10 +196,12 @@ final class AuthMutator
     public function UpdateUserPassword($_, array $args): bool
     {
         return $this->authService->updatePassword(
-            $args['old_password'],
-            $args['new_password']
+         new Request([
+             "old_password" => $args["old_password"],
+             "new_password" => $args["new_password"]
+        ])
         );
     }
     
-   
+    
 }

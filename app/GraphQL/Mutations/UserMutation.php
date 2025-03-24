@@ -13,39 +13,41 @@ final class UserMutation
 
     public function __construct(UserService $userService)
     {
-        $this->userService = $userService;
+
+        $this->userService = new UserService();
     }
 
-
-    
-     // * Convert DateTime string to Carbon instance.
+     /**
+      * Update user profile.
+      *
+      * @param mixed $_
+      * @param array $args
+      * @return array
+      */
+     public function updateProfile($_, array $args): array
+     {
+         $user = Auth::user();
+         if (!$user) {
+             throw new \Exception("User not authenticated.");
+         }
      
-    private function parseDateTime(?string $date): ?string
-    {
-        return $date ? Carbon::parse($date)->format('Y-m-d H:i:s') : null;
-    }
+         return $this->userService->updateProfile(
+          new Request([
+             'user_type' =>  $args["user_type"],
+             'profile_picture'=>  $args['profile_picture'] ?? null,
+               'registration_number' => $args['profileData']['registration_number'] ?? null,
+               'logo' => $args['profileData']['logo'] ?? null,
+               'location' => $args['profileData']['location'] ?? null,
+             'banner'=>  $args['profileData']['banner'] ?? null,
+               'description' => $args['profileData']['description'] ?? null,
+              'website' =>  $args['profileData']['website'] ?? null,
+              'resident_permit' => $args['profileData']['resident_permit'] ?? null,
+              'passport' =>  $args['profileData']['passport'] ?? null
+             ])
+         );
+         
+     }
 
-
-    /**
-     * Update user profile.
-     *
-     * @param mixed $_
-     * @param array $args
-     * @return User
-     */
-    public function updateUserProfile($_, array $args): User
-    {
-        $user = $this->authService->updateProfile([
-            'user_uuid' => $args['user_uuid'],
-            'first_name' => $args['first_name'] ?? null,
-            'last_name' => $args['last_name'] ?? null,
-            'profile_photo' => $args['profile_photo'] ?? null,
-            'state' => $args['state'] ?? null,
-            'country' => $args['country'] ?? null,
-        ]);
-    
-        return $user;
-    }
 
     public function deleteProfile($_, array $args)
     {

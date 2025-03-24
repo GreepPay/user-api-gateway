@@ -1,26 +1,62 @@
 extend type Query @guard {
-
     "Get a paginated mix of all the authenticated user's transactions and point transactions"
-    GetTransactions: [TransactionOrPointTransaction] @field(resolver: "UserQuery@GetTransactions")
+    GetTransactions(
+          type: String = "both" # Allowed values: "normal", "point", "both"
+      ): [TransactionType]! @paginate(defaultCount: 10) @field(resolver: "WalletQuery@GetTransactions")
 
     "Get a single transaction by UUID"
-    GetSingleTransaction(uuid: String!): Transaction @field(resolver: "UserQuery@GetSingleTransaction")
+    GetSingleTransaction(uuid: String! @eq): Transaction @first
 
     "Get a single point transaction by UUID"
-    GetSinglePointTransaction(uuid: String!): PointTransaction @field(resolver: "UserQuery@GetSinglePointTransaction")
+    GetSinglePointTransaction(uuid: String! @eq): PointTransaction @first
 
     "Get a paginated list of beneficiaries for the authenticated user"
-    GetBeneficiaries: [Beneficiary] @field(resolver: "WalletQuery@GetBeneficiaries")
+    
+    GetBeneficiaries(is_auth: Boolean @scope(name: "is_auth")): [Beneficiary]! @paginate(defaultCount: 10) @field(resolver: "WalletQuery@GetBeneficiaries")
 
     "Get the currently supported on-ramp currencies"
-    GetOnRampCurrencies: [String] @field(resolver: "UserQuery@GetOnRampCurrencies")
+    GetOnRampCurrencies: [String]
+        @field(resolver: "WalletQuery@GetOnRampCurrencies")
 
     "Search users by a query string"
-    SearchUsers: [User] @field(resolver: "UserQuery@SearchUsers")
-
-    "Get a paginated list of notifications for the authenticated user"
-    GetNotifications: [Notification] @field(resolver: "UserQuery@GetNotifications")
+    SearchUsers( query:array! ): [User] @field(resolver: "WalletQuery@SearchUsers")
 
     "Get the current exchange rate between two currencies"
-    GetExchangeRate: Float @field(resolver: "UserQuery@GetExchangeRate")
+    GetExchangeRate(from_currency :String! to_currency:String! ): Float @field(resolver: "WalletQuery@GetExchangeRate")
 }
+
+
+
+extend type Mutation @guard {
+    
+    "Initiate a top-up transaction"
+    InitiateTopup(
+        method: String!
+        amount: Float!
+        currency: String!
+        payment_metadata: JSON!
+    ): TopupResponse! @field(resolver: "WalletMutation@InitiateTopup")
+
+    "Make a payment to another user"
+    MakePayment(
+        receiver_uuid: String!
+        amount: Float!
+        currency: String!
+    ): Boolean! @field(resolver: "WalletMutation@MakePayment")
+
+    "Redeem GRP tokens"
+    RedeemGRPToken(
+        grp_amount: Float!
+    ): Boolean! @field(resolver: "WalletMutation@RedeemGRPToken")
+
+    "Add a user as a beneficiary"
+    AddAsBeneficiary(
+        user_uuid: String!
+    ): Boolean! @field(resolver: "WalletMutation@AddAsBeneficiary")
+
+    "Remove a user as a beneficiary"
+    RemoveAsBeneficiary(
+        user_uuid: String!
+    ): Boolean! @field(resolver: "WalletMutation@RemoveAsBeneficiary")
+}
+
