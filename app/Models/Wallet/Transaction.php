@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models\Wallet;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
