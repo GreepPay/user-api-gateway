@@ -11,7 +11,9 @@ final class WalletMutation
 
     public function __construct(WalletService $walletService)
     {
-        $this->walletService = $walletService;
+        $this->authService = new AuthService();
+        $this->walletService = new WalletService();
+        $this->userService = new UserService();
     }
    
 
@@ -25,10 +27,12 @@ final class WalletMutation
     public function InitiateTopup($_, array $args): array
     {
         return $this->walletService->initiateTopup(
-            $args['method'],
-            $args['amount'],
-            $args['currency'],
-            $args['payment_metadata']
+          new Request([
+            'method'=> $args['method'],
+            'amount'=> $args['amount'],
+           'currency'=> $args['currency'],
+           'payment_metadata'=> $args['payment_metadata']
+            ])
         );
     }
 
@@ -42,9 +46,11 @@ final class WalletMutation
     public function MakePayment($_, array $args): bool
     {
         return $this->walletService->makePayment(
-            $args['receiver_uuid'],
-            $args['amount'],
-            $args['currency']
+           new Request([
+          'receiver_uuid'=> $args['receiver_uuid'],
+          'amount'=> $args['amount'],
+          'currency'=>  $args['currency']
+            ])
         );
     }
 
@@ -57,7 +63,12 @@ final class WalletMutation
      */
     public function RedeemGRPToken($_, array $args): bool
     {
-        return $this->walletService->redeemGRPToken($args['grp_amount']);
+        return $this->walletService->redeemGRPToken(
+        new Request([
+          'grp_amount'=>  $args['grp_amount']
+        ])
+        
+       );
     }
     
     
@@ -70,7 +81,12 @@ final class WalletMutation
      */
     public function AddAsBeneficiary($_, array $args): bool
     {
-        return $this->walletService->addBeneficiary($args['user_uuid']);
+        return $this->walletService->addBeneficiary(
+        new Request([
+          'user_uuid'=> $args['user_uuid']
+        ])
+        
+       );
     }
 
     /**
@@ -82,7 +98,11 @@ final class WalletMutation
      */
     public function RemoveAsBeneficiary($_, array $args): bool
     {
-        return $this->walletService->removeBeneficiary($args['user_uuid']);
+        return $this->walletService->removeBeneficiary( new Request([
+          'user_uuid'=> $args['user_uuid']
+        ])
+        
+       );
     }
     
     

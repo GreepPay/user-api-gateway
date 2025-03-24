@@ -75,11 +75,9 @@ class AuthService
      * @param Request $request
      * @return mixed
      */
-    public function sendResetPasswordPin(string $email)
+    public function sendResetPasswordPin($request)
     {
-        return $this->authNetwork->post("/v1/auth/reset-otp", [
-            "email" => $email,
-        ]);
+        return $this->authNetwork->post("/v1/auth/reset-otp", $request->all()); 
     }
 
     /**
@@ -110,43 +108,28 @@ class AuthService
     /**
      * Update user profile.
      *
-     * @param array $data
+     * @param Request $request
      * @return mixed
      */
-    public function updateUserProfile(array $data)
+    public function updateUserProfile(Request $request)
     {
-        return $this->authNetwork->put("/v1/auth/update-profile", [
-            "first_name" => $data["first_name"] ?? null,
-            "last_name" => $data["last_name"] ?? null,
-            "profile_photo" => $data["profile_photo"] ?? null,
-            "state" => $data["state"] ?? null,
-            "country" => $data["country"] ?? null,
-        ]);
+        return $this->authNetwork->put("/v1/auth/update-profile", $request->all()); 
+          
     }
 
     /**
      * Resend email OTP.
      *
-     * @param array $data
+     * @param Request $request
      * @return mixed
      */
-    public function resendEmailOTP(array $data)
+    public function resendEmailOTP(Request $request)
     {
-        return $this->authNetwork->post("/v1/auth/resend-otp", [
-            "email" => $data["email"],
-        ]);
+        return $this->authNetwork->post("/v1/auth/resend-otp", $request->all()); 
+        
     }
 
-    /**
-     * Find a user by email.
-     *
-     * @param string $email
-     * @return User|null
-     */
-    public function findUserByEmail(string $email): ?User
-    {
-        return User::where("email", $email)->first();
-    }
+
 
     /**
      * Log out the authenticated user.
@@ -161,18 +144,16 @@ class AuthService
     /**
      * Reset user password using OTP.
      *
-     * @param string $userUuid
-     * @param string $otpCode
-     * @param string $newPassword
+     * 
+     * @param Request $request
      * @return bool
      */
-    public function resetPassword(
-        string $userUuid,
-        string $otpCode,
-        string $newPassword
-    ): bool {
+    public function resetPassword(Request $request): bool {
         // Find the user by UUID
         $user = User::where("uuid", $userUuid)->first();
+        $userUuid = $request->input('user_uuid');
+        $otpCode = $request->input('otp_code');
+        $newPassword = $request->input('new_password'); 
 
         if (!$user) {
             throw new \Exception("User not found.");

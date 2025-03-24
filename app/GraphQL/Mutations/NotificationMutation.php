@@ -23,8 +23,10 @@ final class NotificationMutator
     public function SavePushNotificationToken($_, array $args): bool
     {
         return $this->notificationService->savePushNotificationToken(
-            $args['device_token'],
-            $args['device_type']
+         new Request([
+            "device_token" => $args["device_token"],
+              "device_type" => $args["device_type"],
+         ])
         );
     }
 
@@ -37,6 +39,10 @@ final class NotificationMutator
      */
     public function MarkNotificationsAsRead($_, array $args): bool
     {
-        return $this->notificationService->markNotificationsAsRead($args['notification_uuids']);
+        return $this->notificationService->markNotificationsAsRead(
+         new Request([
+        "notification_uuids" => $args["notification_uuids"]
+        ])
+       );
     }
 }

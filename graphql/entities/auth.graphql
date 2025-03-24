@@ -18,7 +18,7 @@ extend type Mutation {
     ): User! @field(resolver: "AuthMutator@signUp")
 
     "Sign in a user"
-    SignIn(email: String!, password: String!): Boolean!
+    SignIn(email: String!, password: String!): AuthResponse!
         @field(resolver: "AuthMutator@signIn")
 
     "Verify user email using OTP"
@@ -55,4 +55,14 @@ extend type Mutation {
         old_password: String!
         otp: String
     ): Boolean! @field(resolver: "AuthMutator@updatePassword")
+    
+    
+    "Update user profile"
+        UpdateProfile(
+                first_name: String
+                last_name: String
+                profile_photo: Upload
+                state: String
+                country: String
+            ): User @field(resolver: "AuthMutator@UpdateProfile")
 }

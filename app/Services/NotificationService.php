@@ -45,20 +45,10 @@ class NotificationService
      * @param Request $request
      * @return mixed
      */
-    public function updateNotificationStatus(Request $request)
+    public function markNotificationsAsRead(Request $request)
     {
         
         return $this->notificationNetwork->put("/v1/device-tokens", $request->all());
     }
 
-    /**
-     * Send a broadcast notification to multiple users.
-     *
-     * @param Request $request
-     * @return mixed
-     */
-    public function sendBroadcastNotification(Request $request)
-    {
-        return $this->notificationNetwork->post("/v1/notifications/broadcast", $request->all());
-    }
 }

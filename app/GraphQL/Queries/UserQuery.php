@@ -28,9 +28,7 @@ final class UserQuery
         $user = Auth::user();
 
         if ($user) {
-            // Fetch wallet and profile info
-            $walletService = new WalletService();
-            $user->wallet = $walletService ->getWallet($user->id);
+            // profile info
             $user->profile = Profile::where('user_id', $user->id)->first();
 
             return $user;
@@ -44,61 +42,30 @@ final class UserQuery
      *
      * @param mixed $_
      * @param array $args
-     * @return LengthAwarePaginator
+     * @return $query
      */
-    public function GetTransactions($_, array $args): LengthAwarePaginator
-    {
-        $user = Auth::user();
-        $type = $args['type'] ?? 'both'; // 'both', 'transaction', or 'point_transaction'
-        $perPage = $args['perPage'] ?? 10;
-        $page = $args['page'] ?? 1;
+     public function GetTransactions($_, array $args)
+       {
+           $user = Auth::user();
+           $type = $args['type'] ?? 'both'; // 'both', 'transaction', or 'point_transaction'
+   
+           $query = collect();
+   
+           if ($type === 'both' || $type === 'transaction') {
+               $query = $query->merge(
+                   Transaction::where('user_id', $user->id)->get()
+               );
+           }
+   
+           if ($type === 'both' || $type === 'point_transaction') {
+               $query = $query->merge(
+                   PointTransaction::where('user_id', $user->id)->get()
+               );
+           }
+   
+           return $query->paginate();
+       }
 
-        $transactions = collect();
-
-        if ($type === 'both' || $type === 'transaction') {
-            $transactions = $transactions->merge(
-                Transaction::where('user_id', $user->id)->get()
-            );
-        }
-
-        if ($type === 'both' || $type === 'point_transaction') {
-            $transactions = $transactions->merge(
-                PointTransaction::where('user_id', $user->id)->get()
-            );
-        }
-
-        // Paginate the results
-        return new LengthAwarePaginator(
-            $transactions->forPage($page, $perPage),
-            $transactions->count(),
-            $perPage,
-            $page
-        );
-    }
-
-    /**
-     * Get a single transaction by UUID.
-     *
-     * @param mixed $_
-     * @param array $args
-     * @return Transaction|null
-     */
-    public function GetSingleTransaction($_, array $args): ?Transaction
-    {
-        return Transaction::where('uuid', $args['uuid'])->first();
-    }
-
-    /**
-     * Get a single point transaction by UUID.
-     *
-     * @param mixed $_
-     * @param array $args
-     * @return PointTransaction|null
-     */
-    public function GetSinglePointTransaction($_, array $args): ?PointTransaction
-    {
-        return PointTransaction::where('uuid', $args['uuid'])->first();
-    }
 
     /**
      * Get a paginated list of beneficiaries for the authenticated user.
@@ -107,37 +74,13 @@ final class UserQuery
      * @param array $args
      * @return LengthAwarePaginator
      */
-    public function GetBeneficiaries($_, array $args): LengthAwarePaginator
-    {
-        $user = Auth::user();
-        $perPage = $args['perPage'] ?? 10;
-        $page = $args['page'] ?? 1;
-
-        return Beneficiary::where('user_id', $user->id)
-            ->paginate($perPage, ['*'], 'page', $page);
-    }
-
-    /**
-     * Get a paginated list of notifications for the authenticated user.
-     *
-     * @param mixed $_
-     * @param array $args
-     * @return LengthAwarePaginator
-     */
-    public function GetNotifications($_, array $args): LengthAwarePaginator
-    {
-        $user = Auth::user();
-        $perPage = $args['perPage'] ?? 10;
-        $page = $args['page'] ?? 1;
-
-        return Notification::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage, ['*'], 'page', $page);
-    }
-    
-    
-    
-    
+     public function GetBeneficiaries($_, array $args)
+      {
+          $user = Auth::user();
+  
+          return Beneficiary::where('user_id', $user->id)->paginate();
+      }
+   
     /**
      * Search users by a query string via the User Service.
      *

@@ -36,95 +36,26 @@ class UserService
         );
     }
 
-    public function createProfile($request)
-    {
-        return $this->userNetwork->post("/v1/profiles", $request->all());
-    }
-
+    
     public function updateProfile($request)
     {
         return $this->userNetwork->put("/v1/profiles", $request->all());
     }
 
-    public function deleteProfile($request)
-    {
-        return $this->userNetwork->delete("/v1/profiles", $request->all());
-    }
     
-    
-  
-    /**
-     * Create a new user.
-     *
-     * @param array $data
-     * @return mixed
-     */
-    public function createUser(array $data)
-    {
-        return $this->userNetwork->post("/v1/auth/users", [
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'state' => $data['state'],
-            'country' => $data['country'],
-            'default_currency' => $data['default_currency'],
-            'uuid' => Str::uuid(),
-        ]);
-    }
-    
-    /**
-     * Update user profile.
-     *
-     * @param array $data
-     * @return mixed
-     */
-    public function updateUserProfile(array $data)
-    {
-        return $this->userNetwork->put("/v1/auth/update-profile", [
-            'first_name' => $data['first_name'] ?? null,
-            'last_name' => $data['last_name'] ?? null,
-            'profile_photo' => $data['profile_photo'] ?? null,
-            'state' => $data['state'] ?? null,
-            'country' => $data['country'] ?? null,
-        ]);
-    }
-
     
     /**
      * Verify user identity.
      *
-     * @param string $userUuid
-     * @param string $idNumber
-     * @param string $idCountry
-     * @param string $idType
+     * @param $request
      * @return mixed
      */
-    public function verifyIdentity(string $userUuid, string $idNumber, string $idCountry, string $idType)
+    public function verifyIdentity($request)
     {
-        return $this->userNetwork->post("/v1/verification", [
-            'user_uuid' => $userUuid,
-            'id_number' => $idNumber,
-            'id_country' => $idCountry,
-            'id_type' => $idType,
-        ]);
+        return $this->userNetwork->post("/v1/verification", $request->all()); 
+         
     }
-    
    
-    
-
-    /**
-     * Send reset password PIN.
-     *
-     * @param array $data
-     * @return mixed
-     */
-    public function sendResetPasswordPin(array $data)
-    {
-        return $this->userNetwork->post("/v1/auth/update-password", [
-            'email' => $data['email'],
-        ]);
-    }
     /**
      * Search users by name or email.
      *
