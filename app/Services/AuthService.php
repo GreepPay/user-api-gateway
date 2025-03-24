@@ -114,6 +114,31 @@ class AuthService
     }
 
     /**
+     * Resend email OTP.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function resendEmailOTP(array $data)
+    {
+        return $this->authNetwork->post("/v1/auth/resend-otp", [
+            'email' => $data['email'],
+        ]);
+    }
+    
+    
+    /**
+     * Find a user by email.
+     *
+     * @param string $email
+     * @return User|null
+     */
+    public function findUserByEmail(string $email): ?User
+    {
+        return User::where('email', $email)->first();
+    }
+    
+    /**
      * Log out the authenticated user.
      *
      * @return mixed
@@ -122,6 +147,36 @@ class AuthService
     {
         return $this->authNetwork->post("/v1/auth/logout");
     }
+    
+    /**
+     * Reset user password using OTP.
+     *
+     * @param string $userUuid
+     * @param string $otpCode
+     * @param string $newPassword
+     * @return bool
+     */
+    public function resetPassword(string $userUuid, string $otpCode, string $newPassword): bool
+    {
+        // Find the user by UUID
+        $user = User::where('uuid', $userUuid)->first();
+    
+        if (!$user) {
+            throw new \Exception("User not found.");
+        }
+    
+        // Verify the OTP code (you can use your OTP verification logic here)
+        if (!$this->verifyOtp($user->id, $otpCode)) {
+            throw new \Exception("Invalid OTP code.");
+        }
+    
+        // Update the user's password
+        $user->password = Hash::make($newPassword);
+        $user->save();
+    
+        return true;
+    }
+    
 
     /**
      * Delete a user.

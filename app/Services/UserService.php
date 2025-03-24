@@ -51,6 +51,63 @@ class UserService
         return $this->userNetwork->delete("/v1/profiles", $request->all());
     }
     
+    
+  
+    /**
+     * Create a new user.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function createUser(array $data)
+    {
+        return $this->userNetwork->post("/v1/auth/users", [
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'state' => $data['state'],
+            'country' => $data['country'],
+            'default_currency' => $data['default_currency'],
+            'uuid' => Str::uuid(),
+        ]);
+    }
+    
+    
+    /**
+     * Verify user identity.
+     *
+     * @param string $userUuid
+     * @param string $idNumber
+     * @param string $idCountry
+     * @param string $idType
+     * @return mixed
+     */
+    public function verifyIdentity(string $userUuid, string $idNumber, string $idCountry, string $idType)
+    {
+        return $this->userNetwork->post("/v1/verification", [
+            'user_uuid' => $userUuid,
+            'id_number' => $idNumber,
+            'id_country' => $idCountry,
+            'id_type' => $idType,
+        ]);
+    }
+    
+   
+    
+
+    /**
+     * Send reset password PIN.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function sendResetPasswordPin(array $data)
+    {
+        return $this->userNetwork->post("/v1/auth/update-password", [
+            'email' => $data['email'],
+        ]);
+    }
     /**
      * Search users by name or email.
      *

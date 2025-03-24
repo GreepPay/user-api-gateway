@@ -9,10 +9,13 @@ extend type Query {
 extend type Mutation {
     "Sign up a new user"
     SignUp(
+        first_name: String!
+        last_name: String!
         email: String!
         password: String!
-        username: String
-        type: String!
+        state: String!
+        country: String!
+        default_currency: String!
     ): User! @field(resolver: "AuthMutator@signUp")
 
     "Sign in a user"
@@ -27,15 +30,25 @@ extend type Mutation {
         otp: String!
     ): User! @field(resolver: "AuthMutator@verifyEmailOTP")
 
-    "Resend verification email to user"
-    ResendVerifyEmail(
-        user_uuid: String!
-    ): Boolean! @field(resolver: "AuthMutator@resendVerifyEmail")
-
-    "Send reset password email to user"
-    SendResetPasswordEmail(
+    "Resend email OTP"
+    ResendEmailOTP(
         email: String!
-    ): Boolean! @field(resolver: "AuthMutator@sendResetPasswordEmail")
+    ): Boolean! @field(resolver: "AuthMutator@resendEmailOTP")
+
+    "Verify user identity"
+    VerifyIdentity(
+        user_uuid: String!
+        id_number: String!
+        id_country: String!
+        id_type: String!
+    ): User @field(resolver: "AuthMutator@VerifyIdentity")
+
+    "reset password for user"
+    ResetPassword(
+        user_uuid: String!
+        otp_code: String!
+        new_password: String!
+    ): Boolean! @field(resolver: "AuthMutator@resetPassword")
 
     "Update user password"
     UpdatePassword(
@@ -45,6 +58,4 @@ extend type Mutation {
         otp: String
     ): Boolean! @field(resolver: "AuthMutator@updatePassword")
 
-    "Sign out the authenticated user"
-    SignOut: Boolean! @field(resolver: "AuthMutator@signOut")
 }

@@ -45,9 +45,6 @@ final class AuthMutator
             'uuid' => Str::uuid(),
         ]);
 
-        // Send welcome notification
-        $this->notificationService->sendWelcomeNotification($user->id);
-
         return $user;
     }
 
@@ -79,10 +76,7 @@ final class AuthMutator
      */
     public function ResendEmailOTP($_, array $args): bool
     {
-        $user = $this->userService->findUserByEmail($args['email']);
-
-        // Resend OTP via NotificationService
-        $this->notificationService->resendOTP($user->id);
+        $user = $this->authService->findUserByEmail($args['email']);
 
         return true;
     }
@@ -123,23 +117,6 @@ final class AuthMutator
     }
 
     /**
-     * Send reset password PIN.
-     *
-     * @param mixed $_
-     * @param array $args
-     * @return bool
-     */
-    public function SendResetPasswordPin($_, array $args): bool
-    {
-        $user = $this->userService->findUserByEmail($args['email']);
-
-        // Send reset password PIN via NotificationService
-        $this->notificationService->sendResetPasswordPin($user->id);
-
-        return true;
-    }
-
-    /**
      * Reset user password.
      *
      * @param mixed $_
@@ -169,4 +146,6 @@ final class AuthMutator
             $args['new_password']
         );
     }
+    
+   
 }
