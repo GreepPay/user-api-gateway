@@ -22,7 +22,7 @@ extend type Mutation {
     SignIn(
         email: String!
         password: String!
-    ): AuthResponse! @field(resolver: "AuthMutator@signIn")
+    ): Boolean! @field(resolver: "AuthMutator@signIn")
 
     "Verify user email using OTP"
     VerifyEmailOTP(
