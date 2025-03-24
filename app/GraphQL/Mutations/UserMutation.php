@@ -1,6 +1,5 @@
-
 <?php
-/*
+
 namespace App\GraphQL\Mutations;
 
 use App\Exceptions\GraphQLException;
@@ -17,71 +16,9 @@ final class UserMutation
         $this->userService = $userService;
     }
 
-    public function createProfile($_, array $args)
-    {
-        if (!isset($args["input"]) || !is_array($args["input"])) {
-            throw new GraphQLException("Invalid input: 'input' field is required");
-        }
 
-        $input = $args["input"];
-
-        if (!isset($input["auth_user_id"]) || !isset($input["user_type"])) {
-            throw new GraphQLException("Missing required fields: 'auth_user_id' or 'user_type'");
-        }
-
-        $profileData = [
-            "auth_user_id" => $input["auth_user_id"],
-            "user_type" => $input["user_type"],
-            "profile_picture" => $input["profile_picture"] ?? null,
-            "profileData" => []
-        ];
-
-        switch ($input["user_type"]) {
-            case "Business":
-                if (!isset($input["business"]) || !is_array($input["business"])) {
-                    throw new GraphQLException("Invalid business profile data.");
-                }
-                $profileData["profileData"] = $input["business"];
-                break;
-            case "Rider":
-                if (!isset($input["rider"]) || !is_array($input["rider"])) {
-                    throw new GraphQLException("Invalid rider profile data.");
-                }
-                $profileData["profileData"] = $input["rider"];
-                break;
-            case "Customer":
-                if (!isset($input["customer"]) || !is_array($input["customer"])) {
-                    throw new GraphQLException("Invalid customer profile data.");
-                }
-                $profileData["profileData"] = $input["customer"];
-                break;
-            default:
-                throw new GraphQLException("Invalid user_type.");
-        }
-
-        $response = $this->userService->createProfile(new Request($profileData));
-
-        if (!isset($response["data"]["profile"])) {
-            throw new GraphQLException("Invalid response from UserService. Missing 'profile' field.");
-        }
-
-        // Extract response data safely
-        $profile = $response["data"]["profile"];
-
-        return [
-            "id" => $profile["id"],
-            "auth_user_id" => $response["data"]["auth_user_id"],
-            "user_type" => $response["data"]["user_type"],
-            "profile_picture" => $response["data"]["profile_picture"],
-            "verification_status" => $response["data"]["verification_status"],
-            "created_at" => $this->parseDateTime($response["data"]["created_at"]),
-            "updated_at" => $this->parseDateTime($response["data"]["updated_at"]),
-            "profileData" => $profile
-        ];
-    }
-
-    /**
-     * Convert DateTime string to Carbon instance.
+    
+     // * Convert DateTime string to Carbon instance.
      
     private function parseDateTime(?string $date): ?string
     {
@@ -89,17 +26,25 @@ final class UserMutation
     }
 
 
-    public function updateProfile($_, array $args)
+    /**
+     * Update user profile.
+     *
+     * @param mixed $_
+     * @param array $args
+     * @return User
+     */
+    public function updateUserProfile($_, array $args): User
     {
-        $response = $this->userService->updateProfile(
-            new Request([
-                "auth_user_id" => $args["auth_user_id"],
-                "user_type" => $args["user_type"],
-                // Add additional profile fields to update here.
-            ])
-        );
-
-        return $response["data"]["updateProfile"] ?? null;
+        $user = $this->userService->updateProfile([
+            'user_uuid' => $args['user_uuid'],
+            'first_name' => $args['first_name'] ?? null,
+            'last_name' => $args['last_name'] ?? null,
+            'profile_photo' => $args['profile_photo'] ?? null,
+            'state' => $args['state'] ?? null,
+            'country' => $args['country'] ?? null,
+        ]);
+    
+        return $user;
     }
 
     public function deleteProfile($_, array $args)
@@ -115,10 +60,6 @@ final class UserMutation
     
 } 
 
-/*
-This is a multi-line comment in PHP.
-It spans multiple lines.
-Everything inside is ignored by the PHP interpreter.
-*/
+
 
 

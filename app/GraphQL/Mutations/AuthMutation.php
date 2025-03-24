@@ -34,7 +34,7 @@ final class AuthMutator
      */
     public function SignUp($_, array $args): User
     {
-        $user = $this->userService->createUser([
+        $user = $this->authService->saveUser([
             'first_name' => $args['first_name'],
             'last_name' => $args['last_name'],
             'email' => $args['email'],

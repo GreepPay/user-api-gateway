@@ -11,9 +11,15 @@ extend type Mutation {
     createUserProfile(input: UserProfileInput!): UserProfile!
         @field(resolver: "UserMutation@createProfile")
 
-    "Update an existing user profile"
-    updateUserProfile(auth_user_id: String!, input: UserProfileInput!): UserProfile!
-        @field(resolver: "UserMutation@updateProfile")
+        "Update user profile"
+    UpdateProfile(
+            first_name: String
+            last_name: String
+            profile_photo: Upload
+            state: String
+            country: String
+        ): User @field(resolver: "UserMutator@UpdateProfile")
+
 
     "Delete a user profile"
     deleteUserProfile(auth_user_id: String!): DeleteResponse!

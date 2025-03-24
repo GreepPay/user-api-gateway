@@ -73,6 +73,23 @@ class UserService
         ]);
     }
     
+    /**
+     * Update user profile.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function updateUserProfile(array $data)
+    {
+        return $this->userNetwork->put("/v1/profiles", [
+            'first_name' => $data['first_name'] ?? null,
+            'last_name' => $data['last_name'] ?? null,
+            'profile_photo' => $data['profile_photo'] ?? null,
+            'state' => $data['state'] ?? null,
+            'country' => $data['country'] ?? null,
+        ]);
+    }
+
     
     /**
      * Verify user identity.

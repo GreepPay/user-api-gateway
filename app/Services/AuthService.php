@@ -55,7 +55,16 @@ class AuthService
      */
     public function saveUser(Request $request)
     {
-        return $this->authNetwork->post("/v1/auth/users", $request->all());
+        return $this->authNetwork->post("/v1/auth/users", [
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'state' => $data['state'],
+            'country' => $data['country'],
+            'default_currency' => $data['default_currency'],
+            'uuid' => Str::uuid(),
+        ]);
     }
 
     /**
