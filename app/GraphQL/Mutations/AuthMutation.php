@@ -99,6 +99,21 @@ final class AuthMutator
         return $user;
     }
 
+    
+    /**
+     * Send reset password PIN.
+     *
+     * @param mixed $_
+     * @param array $args
+     * @return Boolean
+     */
+    public function SendResetPasswordPin($_, array $args): bool
+    {
+        return $this->authService->sendResetPasswordPin(
+            $args['email']
+        );
+    }
+
     /**
      * Sign in a user.
      *

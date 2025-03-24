@@ -84,9 +84,11 @@ class AuthService
      * @param Request $request
      * @return mixed
      */
-    public function resetUserOtp(Request $request)
+    public function sendResetPasswordPin(string $email)
     {
-        return $this->authNetwork->post("/v1/auth/reset-otp", $request->all());
+        return $this->authNetwork->post("/v1/auth/reset-otp", [
+               'email' => $email,
+           ]);
     }
 
     /**

@@ -29,6 +29,12 @@ extend type Mutation {
         email: String!
         otp: String!
     ): User! @field(resolver: "AuthMutator@verifyEmailOTP")
+    
+     "send rest password pin "
+    SendResetPasswordPin(
+        email: String!
+     
+    ): Boolean!@field(resolver: "AuthMutator@SendResetPasswordPin")
 
     "Resend email OTP"
     ResendEmailOTP(
