@@ -116,13 +116,20 @@ class AuthService
     /**
      * Update user profile.
      *
-     * @param Request $request
+     * @param array $data
      * @return mixed
      */
-    public function updateUserProfile(Request $request)
+    public function updateUserProfile(array $data)
     {
-        return $this->authNetwork->post("/v1/auth/update-profile", $request->all());
+        return $this->authNetwork->put("/v1/auth/update-profile", [
+            'first_name' => $data['first_name'] ?? null,
+            'last_name' => $data['last_name'] ?? null,
+            'profile_photo' => $data['profile_photo'] ?? null,
+            'state' => $data['state'] ?? null,
+            'country' => $data['country'] ?? null,
+        ]);
     }
+  
 
     /**
      * Resend email OTP.

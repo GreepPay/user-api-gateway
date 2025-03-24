@@ -81,7 +81,7 @@ class UserService
      */
     public function updateUserProfile(array $data)
     {
-        return $this->userNetwork->put("/v1/profiles", [
+        return $this->userNetwork->put("/v1/auth/update-profile", [
             'first_name' => $data['first_name'] ?? null,
             'last_name' => $data['last_name'] ?? null,
             'profile_photo' => $data['profile_photo'] ?? null,

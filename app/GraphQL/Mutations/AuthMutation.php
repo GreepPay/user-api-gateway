@@ -146,6 +146,29 @@ final class AuthMutator
             $args['new_password']
         );
     }
+    
+    
+    
+    /**
+     * Update user profile.
+     *
+     * @param mixed $_
+     * @param array $args
+     * @return User
+     */
+    public function updateUserProfile($_, array $args): User
+    {
+        $user = $this->authService->updateProfile([
+            'user_uuid' => $args['user_uuid'],
+            'first_name' => $args['first_name'] ?? null,
+            'last_name' => $args['last_name'] ?? null,
+            'profile_photo' => $args['profile_photo'] ?? null,
+            'state' => $args['state'] ?? null,
+            'country' => $args['country'] ?? null,
+        ]);
+    
+        return $user;
+    }
 
     /**
      * Update user password.

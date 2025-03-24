@@ -35,7 +35,7 @@ final class UserMutation
      */
     public function updateUserProfile($_, array $args): User
     {
-        $user = $this->userService->updateProfile([
+        $user = $this->authService->updateProfile([
             'user_uuid' => $args['user_uuid'],
             'first_name' => $args['first_name'] ?? null,
             'last_name' => $args['last_name'] ?? null,
