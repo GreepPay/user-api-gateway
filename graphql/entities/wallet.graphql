@@ -1,25 +1,29 @@
 extend type Query @guard {
-
     "Get a paginated mix of all the authenticated user's transactions and point transactions"
-    GetTransactions: [TransactionOrPointTransaction] @field(resolver: "UserQuery@GetTransactions")
+    GetTransactions: [TransactionOrPointTransaction]
+        @field(resolver: "UserQuery@GetTransactions")
 
     "Get a single transaction by UUID"
-    GetSingleTransaction(uuid: String!): Transaction @field(resolver: "UserQuery@GetSingleTransaction")
+    GetSingleTransaction(uuid: String! @eq): Transaction @first
 
     "Get a single point transaction by UUID"
-    GetSinglePointTransaction(uuid: String!): PointTransaction @field(resolver: "UserQuery@GetSinglePointTransaction")
+    GetSinglePointTransaction(uuid: String!): PointTransaction
+        @field(resolver: "UserQuery@GetSinglePointTransaction")
 
     "Get a paginated list of beneficiaries for the authenticated user"
-    GetBeneficiaries: [Beneficiary] @field(resolver: "UserQuery@GetBeneficiaries")
+    GetBeneficiaries: [Beneficiary]
+        @field(resolver: "UserQuery@GetBeneficiaries")
 
     "Get the currently supported on-ramp currencies"
-    GetOnRampCurrencies: [String] @field(resolver: "UserQuery@GetOnRampCurrencies")
+    GetOnRampCurrencies: [String]
+        @field(resolver: "UserQuery@GetOnRampCurrencies")
 
     "Search users by a query string"
     SearchUsers: [User] @field(resolver: "UserQuery@SearchUsers")
 
     "Get a paginated list of notifications for the authenticated user"
-    GetNotifications: [Notification] @field(resolver: "UserQuery@GetNotifications")
+    GetNotifications(is_auth: Boolean @scope(name: "is_auth")): [Notification]
+        @paginate
 
     "Get the current exchange rate between two currencies"
     GetExchangeRate: Float @field(resolver: "UserQuery@GetExchangeRate")
@@ -33,36 +37,30 @@ extend type Query @guard {
 
 #     "Soft delete a transaction"
 #     softDeleteTransaction(transaction_id: int!):SoftDeleteTransactionResponse!
-#         @field(resolver: "UserMutation@softDeleteTransaction")        
-        
+#         @field(resolver: "UserMutation@softDeleteTransaction")
+
 #     "Create a new transaction"
 #     createPointTransaction(input: CreatePointTransactionInput!): CreatePointTransactionResponse!
 #         @field(resolver: " UserMutation@createPointTransaction")
-        
+
 #     "Soft delete a transaction"
 #     softDeletePointTransaction(point_transaction_id: int!):SoftDeletePointTransactionResponse!
-#         @field(resolver: "UserMutation@softDeletePointTransaction")  
-    
+#         @field(resolver: "UserMutation@softDeletePointTransaction")
+
 #     "Create a new wallet"
 #      createWallet(input: createWalletInput!) :CreateWalletResponse!
 #         @field(resolver: " UserMutation@createWallet")
-         
+
 #     "Soft delete a transaction"
 #     softDeleteWallet(transaction_id: int!):SoftDeleteWalletResponse!
-#         @field(resolver: "UserMutation@softDeleteWallet")        
-             
-    
+#         @field(resolver: "UserMutation@softDeleteWallet")
+
 #     "Create a new UserBank"
 #     createUserBank(input: createUserBankInput!) :createUserBankResponse!
 #         @field(resolver: "UserMutation@createUserBank")
-        
+
 #     "Soft delete a UserBank"
 #     softDeleteUserBank(transaction_id: int!):softDeleteUserBankResponse!
 #         @field(resolver: "UserMutation@softUserBank")
 # }
-# 
-
-
-
-
-
+#

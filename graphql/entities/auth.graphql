@@ -2,7 +2,6 @@
 extend type Query {
     "Get the authenticated user with wallet and profile info"
     GetAuthUser: User @field(resolver: "UserQuery@GetAuthUser")
-
 }
 
 # Auth mutations
@@ -19,27 +18,20 @@ extend type Mutation {
     ): User! @field(resolver: "AuthMutator@signUp")
 
     "Sign in a user"
-    SignIn(
-        email: String!
-        password: String!
-    ): Boolean! @field(resolver: "AuthMutator@signIn")
+    SignIn(email: String!, password: String!): Boolean!
+        @field(resolver: "AuthMutator@signIn")
 
     "Verify user email using OTP"
-    VerifyEmailOTP(
-        email: String!
-        otp: String!
-    ): User! @field(resolver: "AuthMutator@verifyEmailOTP")
-    
-     "send rest password pin "
-    SendResetPasswordPin(
-        email: String!
-     
-    ): Boolean!@field(resolver: "AuthMutator@SendResetPasswordPin")
+    VerifyEmailOTP(email: String!, otp: String!): User!
+        @field(resolver: "AuthMutator@verifyEmailOTP")
+
+    "send rest password pin "
+    SendResetPasswordPin(email: String!): Boolean!
+        @field(resolver: "AuthMutator@SendResetPasswordPin")
 
     "Resend email OTP"
-    ResendEmailOTP(
-        email: String!
-    ): Boolean! @field(resolver: "AuthMutator@resendEmailOTP")
+    ResendEmailOTP(email: String!): Boolean!
+        @field(resolver: "AuthMutator@resendEmailOTP")
 
     "Verify user identity"
     VerifyIdentity(
@@ -63,5 +55,4 @@ extend type Mutation {
         old_password: String!
         otp: String
     ): Boolean! @field(resolver: "AuthMutator@updatePassword")
-
 }

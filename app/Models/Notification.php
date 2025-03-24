@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
 class Notification extends Model
 {
     use HasFactory;
@@ -17,13 +16,13 @@ class Notification extends Model
      * @var array
      */
     protected $fillable = [
-        'auth_user_id',
-        'content',
-        'is_read',
-        'title',
-        'type',
-        'email',
-        'delivery_status'
+        "auth_user_id",
+        "content",
+        "is_read",
+        "title",
+        "type",
+        "email",
+        "delivery_status",
     ];
 
     /**
@@ -32,8 +31,8 @@ class Notification extends Model
      * @var array
      */
     protected $casts = [
-        'read_at' => 'datetime',
-        'data' => 'array'
+        "read_at" => "datetime",
+        "data" => "array",
     ];
 
     /**
@@ -44,5 +43,13 @@ class Notification extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Scope for auth user
+     */
+    public function scopeIsAuth(Builder $query): void
+    {
+        $query->where("auth_user_id", auth()->id());
     }
 }
