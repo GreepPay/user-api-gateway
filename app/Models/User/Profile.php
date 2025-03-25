@@ -2,52 +2,42 @@
 
 namespace App\Models\User;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Auth\User;
 use Illuminate\Database\Eloquent\Model;
+use MichaelAChrisco\ReadOnly\ReadOnlyTrait;
 
 class Profile extends Model
 {
-    use HasFactory;
+    use ReadOnlyTrait;
 
-    protected $guarded = [];
+    protected $connection = "greep-user";
 
-    /**
-     * Relationship: UserProfile belongs to a User.
-     */
+    protected $table = "user_profiles";
+
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(
+            User::class,
+            foreignKey: "auth_user_id",
+            ownerKey: "id"
+        );
     }
 
-    /**
-     * Get the user's type (e.g., regular user, premium user).
-     */
-    public function getUserTypeAttribute()
+    public function customer()
     {
-        return $this->attributes['user_type'] ?? 'standard';
+        return $this->hasOne(
+            Customer::class,
+            foreignKey: "auth_user_id",
+            ownerKey: "auth_user_id"
+        );
     }
 
-    /**
-     * Relationship: UserProfile has one Wallet.
-     */
-    public function wallet()
+    public function verifications()
     {
-        return $this->hasOne(Wallet::class, 'user_id', 'user_id');
-    }
-
-    /**
-     * Relationship: UserProfile has many Transactions.
-     */
-    public function transactions()
-    {
-        return $this->hasMany(Transaction::class, 'user_id', 'user_id');
-    }
-    
-    /**
-     * Relationship: UserProfile has many Transactions.
-     */
-    public function  pointTransactions()
-    {
-        return $this->hasMany(PointTransaction::class, 'user_id', 'user_id');
+        return $this->hasMany(
+            Verification::class,
+            foreignKey: "auth_user_id",
+            ownerKey: "auth_user_id"
+        );
     }
 }

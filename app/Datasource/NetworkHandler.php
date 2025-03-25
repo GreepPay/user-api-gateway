@@ -5,6 +5,7 @@ namespace App\Datasource;
 use App\Exceptions\GraphQLException;
 use App\Jobs\UpdateCache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Http\Client\Response;
 

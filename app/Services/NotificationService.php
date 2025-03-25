@@ -17,7 +17,9 @@ class NotificationService
     ) {
         $this->serviceUrl = env(
             "NOTIFICATION_API",
-            env("SERVICE_BROKER_URL") . "/broker/greep-notification/" . env("APP_STATE")
+            env("SERVICE_BROKER_URL") .
+                "/broker/greep-notification/" .
+                env("APP_STATE")
         );
         $this->notificationNetwork = new NetworkHandler(
             "",
@@ -28,27 +30,53 @@ class NotificationService
         );
     }
 
+    // Device token
+    /**
+     * Create a device token.
+     *
+     * @param array $request
+     * @return mixed
+     */
+    public function createDeviceToken(array $request)
+    {
+        return $this->notificationNetwork->post("/v1/device-tokens", $request);
+    }
+
+    /**
+     * Update a device token.
+     *
+     * @param array $request
+     * @return mixed
+     */
+    public function updateDeviceToken(array $request)
+    {
+        return $this->notificationNetwork->put("/v1/device-tokens", $request);
+    }
+
+    // Notifications
+
     /**
      * Send a notification using a template.
      *
-     * @param Request $request
+     * @param array $request
      * @return mixed
      */
-    public function saveNotificationtoken(Request $request)
+    public function sendNotification(array $request)
     {
-        return $this->notificationNetwork->post("/v1/device-tokens", $request->all());
+        return $this->notificationNetwork->post("/v1/notifications", $request);
     }
 
     /**
-     * Update notification read status.
+     * Update a notification.
      *
-     * @param Request $request
+     * @param array $request
      * @return mixed
      */
-    public function markNotificationsAsRead(Request $request)
+    public function updateNotificationStatus(array $request)
     {
-        
-        return $this->notificationNetwork->put("/v1/device-tokens", $request->all());
+        return $this->notificationNetwork->put(
+            "/v1/notifications/status",
+            $request
+        );
     }
-
 }

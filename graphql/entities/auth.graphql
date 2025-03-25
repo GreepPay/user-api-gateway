@@ -1,7 +1,7 @@
 # Auth Queries
 extend type Query {
-    "Get the authenticated user with wallet and profile info"
-    GetAuthUser: User @field(resolver: "UserQuery@GetAuthUser")
+    "Get the authenticated user"
+    GetAuthUser: User @field(resolver: "UserQuery@getAuthUser")
 }
 
 # Auth mutations
@@ -21,48 +21,32 @@ extend type Mutation {
     SignIn(email: String!, password: String!): AuthResponse!
         @field(resolver: "AuthMutator@signIn")
 
-    "Verify user email using OTP"
-    VerifyEmailOTP(email: String!, otp: String!): User!
-        @field(resolver: "AuthMutator@verifyEmailOTP")
+    "Resend email OTP"
+    ResendEmailOTP(email: String!): Boolean!
+        @field(resolver: "AuthMutator@resendEmailOTP")
 
-    "send rest password pin "
-    SendResetPasswordPin(email: String!): Boolean!
-        @field(resolver: "AuthMutator@SendResetPasswordPin")
+    "send rest password OTP"
+    sendResetPasswordOTP(email: String!): Boolean!
+        @field(resolver: "AuthMutator@sendResetPasswordOTP")
 
     "Resend email OTP"
     ResendEmailOTP(email: String!): Boolean!
         @field(resolver: "AuthMutator@resendEmailOTP")
 
-    "Verify user identity"
-    VerifyIdentity(
-        user_uuid: String!
-        id_number: String!
-        id_country: String!
-        id_type: String!
-    ): User @field(resolver: "AuthMutator@VerifyIdentity")
-
-    "reset password for user"
+    "Reset password for user"
     ResetPassword(
         user_uuid: String!
         otp_code: String!
         new_password: String!
     ): Boolean! @field(resolver: "AuthMutator@resetPassword")
 
+    "Verify user OTP"
+    VerifyUserOTP(user_uuid: String!, otp: String!): Boolean!
+        @field(resolver: "AuthMutator@verifyUserOTP")
+}
+
+extend type Mutation @guard {
     "Update user password"
-    UpdatePassword(
-        user_uuid: String!
-        password: String!
-        old_password: String!
-        otp: String
-    ): Boolean! @field(resolver: "AuthMutator@updatePassword")
-    
-    
-    "Update user profile"
-        UpdateProfile(
-                first_name: String
-                last_name: String
-                profile_photo: Upload
-                state: String
-                country: String
-            ): User @field(resolver: "AuthMutator@UpdateProfile")
+    UpdatePassword(current_password: String!, new_password: String!): Boolean!
+        @field(resolver: "AuthMutator@updatePassword")
 }

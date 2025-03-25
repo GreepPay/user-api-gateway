@@ -37,6 +37,8 @@ class AuthService
         );
     }
 
+    // Authentication routes
+
     /**
      * Get the authenticated user.
      *
@@ -61,75 +63,57 @@ class AuthService
     /**
      * Authenticate a user.
      *
-     * @param Request $request
+     * @param array $request
      * @return mixed
      */
-    public function authenticateUser(Request $request)
+    public function authenticateUser(array $request)
     {
-        return $this->authNetwork->post("/v1/auth/login", $request->all());
+        return $this->authNetwork->post("/v1/auth/login", $request);
     }
 
     /**
      * Reset user OTP.
      *
-     * @param Request $request
+     * @param array $request
      * @return mixed
      */
-    public function sendResetPasswordPin($request)
+    public function resetOtp(array $request)
     {
-        return $this->authNetwork->post("/v1/auth/reset-otp", $request->all()); 
+        return $this->authNetwork->post("/v1/auth/reset-otp", $request);
     }
 
     /**
      * Verify user OTP.
      *
-     * @param Request $request
+     * @param array $request
      * @return mixed
      */
-    public function verifyUserOtp(Request $request)
+    public function verifyUserOtp(array $request)
     {
-        return $this->authNetwork->post("/v1/auth/verify-otp", $request->all());
+        return $this->authNetwork->post("/v1/auth/verify-otp", $request);
     }
 
     /**
      * Update user password.
      *
-     * @param Request $request
+     * @param array $request
      * @return mixed
      */
-    public function updatePassword(Request $request)
+    public function updatePassword(array $request)
     {
-        return $this->authNetwork->post(
-            "/v1/auth/update-password",
-            $request->all()
-        );
+        return $this->authNetwork->post("/v1/auth/update-password", $request);
     }
 
     /**
      * Update user profile.
      *
-     * @param Request $request
+     * @param array $request
      * @return mixed
      */
-    public function updateUserProfile(Request $request)
+    public function updateAuthUserProfile(array $request)
     {
-        return $this->authNetwork->put("/v1/auth/update-profile", $request->all()); 
-          
+        return $this->authNetwork->post("/v1/auth/update-profile", $request);
     }
-
-    /**
-     * Resend email OTP.
-     *
-     * @param Request $request
-     * @return mixed
-     */
-    public function resendEmailOTP(Request $request)
-    {
-        return $this->authNetwork->post("/v1/auth/resend-otp", $request->all()); 
-        
-    }
-
-
 
     /**
      * Log out the authenticated user.
@@ -142,44 +126,25 @@ class AuthService
     }
 
     /**
-     * Reset user password using OTP.
-     *
-     * 
-     * @param Request $request
-     * @return bool
-     */
-    public function resetPassword(Request $request): bool {
-        // Find the user by UUID
-        $user = User::where("uuid", $userUuid)->first();
-        $userUuid = $request->input('user_uuid');
-        $otpCode = $request->input('otp_code');
-        $newPassword = $request->input('new_password'); 
-
-        if (!$user) {
-            throw new \Exception("User not found.");
-        }
-
-        // Verify the OTP code (you can use your OTP verification logic here)
-        if (!$this->verifyOtp($user->id, $otpCode)) {
-            throw new \Exception("Invalid OTP code.");
-        }
-
-        // Update the user's password
-        $user->password = Hash::make($newPassword);
-        $user->save();
-
-        return true;
-    }
-
-    /**
      * Delete a user.
      *
-     * @param Request $request
+     * @param string $userId
      * @return mixed
      */
-    public function deleteUser(Request $request)
+    public function deleteUser(string $userId)
     {
-        $userId = $request->route("id"); // Extract user ID from the request
         return $this->authNetwork->delete("/v1/auth/users/{$userId}");
+    }
+
+    // Authentication routes
+
+    /**
+     * Check if the user has permission
+     *
+     * @return mixed
+     */
+    public function userCan(string $permission_name)
+    {
+        return $this->authNetwork->get("/v1/auth/user-can/{$permission_name}");
     }
 }

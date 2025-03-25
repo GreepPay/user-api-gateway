@@ -11,7 +11,6 @@ class WalletService
     protected $serviceUrl;
     protected NetworkHandler $walletNetwork;
 
-    
     /**
      * construct
      *
@@ -21,15 +20,15 @@ class WalletService
      * @return mixed
      */
     public function __construct(
-    
-    
         bool $useCache = true,
         array $headers = [],
         string $apiType = "graphql"
     ) {
         $this->serviceUrl = env(
             "WALLET_API",
-            env("SERVICE_BROKER_URL") . "/broker/greep-wallet/" . env("APP_STATE")
+            env("SERVICE_BROKER_URL") .
+                "/broker/greep-wallet/" .
+                env("APP_STATE")
         );
 
         $this->walletNetwork = new NetworkHandler(
@@ -41,105 +40,220 @@ class WalletService
         );
     }
 
-    /**
-     * makePayment
-     *
-     * @param string $receiverUuid
-     * @param float $amount
-     * @param string $currency
-     * @return mixed
-     */
-    public function makePayment($receiverUuid, $amount, $currency) 
-    {
-        return $this->walletNetwork->post("/v1/transactions", [
-            'receiver_uuid' => $receiverUuid,
-            'amount' => $amount,
-            'currency' => $currency
-        ]);
-    } 
+    // Wallet
 
-    
     /**
-     * addBeneficiary
+     * Create a wallet
      *
-     * @param int $user_uuid
+     * @param array $data
      * @return mixed
      */
-    public function addBeneficiary($user_uuid) 
+    public function createWallet(array $data)
     {
-        return $this->walletNetwork->post("/v1/beneficiaries", [
-            'user_uuid' => $user_uuid,
-        ]);
-    } 
-    
-    
-    
-    /**
-     * Remove a beneficiary.
-     *
-     * @param int $user_uuid
-     * @return mixed
-     */
-    public function removeBeneficiary($user_uuid) 
-    {
-        return $this->walletNetwork->post("/v1/beneficiaries/{$user_uuid}/soft-delete");
+        return $this->walletNetwork->post("/v1/wallets", $data);
     }
 
-    
-    
-    
-    
-    /**
-     * initiateTopup
-     *
-     * @param Request $request
-     * @return mixed
-     */
-    public function initiateTopup(Request $request) 
-    {
-        return $this->walletNetwork->post("/v1/transactions", $request->all());
-    } 
-    
-    
-    
-    
-    /**
-     * Get exchange rates.
-     *
-     * @param Request $request
-     * @return mixed
-     */
-    public function getExchangeRate(Request $request)
-    {
-        $fromCurrency = $request->input('from_currency');
+    // Beneficiaries
 
-        return $this->walletNetwork->get("/v1/onramp/rates/{$fromCurrency}", $request->all());
+    /**
+     * Create a beneficiary
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function createBeneficiary(array $data)
+    {
+        return $this->walletNetwork->post("/v1/beneficiaries", $data);
     }
 
-    
     /**
-     * Get exchange rates.
+     * Update a beneficiary
      *
+     * @param string $id
+     * @param array $data
+     * @return mixed
+     */
+    public function updateBeneficiary(string $id, array $data)
+    {
+        return $this->walletNetwork->put("/v1/beneficiaries/{$id}", $data);
+    }
+
+    /**
+     * Delete a beneficiary
+     *
+     * @param string $id
+     * @return mixed
+     */
+    public function deleteBeneficiary(string $id)
+    {
+        return $this->walletNetwork->post(
+            "/v1/beneficiaries/{$id}/soft-delete"
+        );
+    }
+
+    // Collections (OnRamp)
+
+    /**
+     * Get OnRamp Supported Countries
      *
      * @return mixed
      */
-    public function getOnRampCurrencies()
+    public function getOnRampSupportedCountries()
     {
         return $this->walletNetwork->get("/v1/onramp/supported-countries");
     }
 
-
-    
     /**
-     * Create a new point transaction
+     * Get channels by country code
      *
-     * @param $request
+     * @param string $countryCode
      * @return mixed
      */
-    public function redeemGRPToken($request)
+    public function getOnRampChannelsByCountryCode(string $countryCode)
     {
-        return $this->walletNetwork->post("/v1/point-transactions", $request->all());
+        return $this->walletNetwork->get("/v1/onramp/channels/{$countryCode}");
     }
-    
 
-} 
+    /**
+     * Get network by country code
+     *
+     * @param string $countryCode
+     * @return mixed
+     */
+    public function getOnRampNetworkByCountryCode(string $countryCode)
+    {
+        return $this->walletNetwork->get("/v1/onramp/networks/{$countryCode}");
+    }
+
+    /**
+     * Get exchange rates
+     *
+     * @param string $toCurrency. Default from currency is USD
+     * @return mixed
+     */
+    public function getExchangeRates(string $toCurrency)
+    {
+        return $this->walletNetwork->get(
+            "/v1/onramp/exchange-rates/{$toCurrency}"
+        );
+    }
+
+    /**
+     * Get payment collection
+     *
+     * @param int $id
+     * @return mixed
+     */
+    public function getPaymentCollection($id)
+    {
+        return $this->walletNetwork->get("/v1/onramp/collection/{$id}");
+    }
+
+    /**
+     * Create payment collection
+     *
+     * @param array $data
+     * @param int $wallet_id
+     * @param int $user_id
+     * @return mixed
+     */
+    public function createPaymentCollection(array $data, $wallet_id, $user_id)
+    {
+        return $this->walletNetwork->post(
+            "/v1/onramp/{$wallet_id}/{$user_id}",
+            $data
+        );
+    }
+
+    /**
+     * Accept payment collection
+     * @param int $id
+     * @return mixed
+     */
+    public function acceptPaymentCollection($id)
+    {
+        return $this->walletNetwork->post("/v1/onramp/accept/{$id}", []);
+    }
+
+    /**
+     * Deny payment collection
+     * @param int $id
+     * @return mixed
+     */
+    public function denyPaymentCollection($id)
+    {
+        return $this->walletNetwork->post("/v1/onramp/deny/{$id}", []);
+    }
+
+    /**
+     * Cancel payment collection
+     * @param int $id
+     * @return mixed
+     */
+    public function cancelPaymentCollection($id)
+    {
+        return $this->walletNetwork->post("/v1/onramp/cancel/{$id}", []);
+    }
+
+    /**
+     * Refund payment collection
+     * @param int $id
+     * @return mixed
+     */
+    public function refundPaymentCollection($id)
+    {
+        return $this->walletNetwork->post("/v1/onramp/refund/{$id}", []);
+    }
+
+    // Point transactions
+
+    /**
+     * Create point transaction
+     * @param array $data
+     * @return mixed
+     */
+    public function createPointTransaction(array $data)
+    {
+        return $this->walletNetwork->post("/v1/point-transactions", $data);
+    }
+
+    // Update point transaction status
+    /**
+     * Update point transaction status
+     * @param int $id
+     * @param string $status
+     * @return mixed
+     */
+    public function updatePointTransactionStatus($id, $status)
+    {
+        return $this->walletNetwork->post(
+            "/v1/point-transactions/{$id}/status",
+            ["status" => $status]
+        );
+    }
+
+    // Transaction (normal)
+
+    /**
+     * Create transaction
+     * @param array $data
+     * @return mixed
+     */
+    public function createTransaction(array $data)
+    {
+        return $this->walletNetwork->post("/v1/transactions", $data);
+    }
+
+    /**
+     * Update transaction status
+     * @param int $id
+     * @param string $status
+     * @return mixed
+     */
+    public function updateTransactionStatus($id, $status)
+    {
+        return $this->walletNetwork->post("/v1/transactions/{$id}/status", [
+            "status" => $status,
+        ]);
+    }
+}

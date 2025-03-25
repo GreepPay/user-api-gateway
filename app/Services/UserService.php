@@ -36,39 +36,51 @@ class UserService
         );
     }
 
-    
-    public function updateProfile($request)
+    // Profile
+
+    /**
+     * Create a new profile.
+     *
+     * @param array $request
+     * @return mixed
+     */
+    public function createProfile(array $request)
     {
-        return $this->userNetwork->put("/v1/profiles", $request->all());
+        return $this->userNetwork->post("/v1/profiles", $request);
     }
 
-    
-    
+    /**
+     * Update a profile.
+     *
+     * @param array $request
+     * @return mixed
+     */
+    public function updateProfile(array $request)
+    {
+        return $this->userNetwork->put("/v1/profiles", $request);
+    }
+
+    // Verifications
+
     /**
      * Verify user identity.
      *
-     * @param $request
+     * @param array $request
      * @return mixed
      */
-    public function verifyIdentity($request)
+    public function verifyIdentity(array $request)
     {
-        return $this->userNetwork->post("/v1/verification", $request->all()); 
-         
-    }
-   
-    /**
-     * Search users by name or email.
-     *
-     * @param string $query
-     * @return array
-     */
-    public function searchUsers(string $query): array
-    {
-        return User::where('name', 'like', "%{$query}%")
-            ->orWhere('email', 'like', "%{$query}%")
-            ->limit(10)
-            ->get()
-            ->toArray();
+        return $this->userNetwork->post("/v1/verify-identity", $request);
     }
 
+    /**
+     * Create verification request.
+     *
+     * @param array $request
+     * @return mixed
+     */
+    public function createVerificationRequest(array $request)
+    {
+        return $this->userNetwork->post("/v1/verifications", $request);
+    }
 }

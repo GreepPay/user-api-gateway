@@ -3,108 +3,22 @@ type AuthResponse {
     user: User!
 }
 
-type UserResponse {
-    success: Boolean!
-    message: String!
-    data: User!
+type SupportedCurrency {
+    country: String!
+    code: String!
+    currency: String!
+    supported_methods: [String!]!
 }
 
-
-# Response type for the `createTransaction` mutation.
-# This defines the structure of the response returnQueryed after creating a transaction.
-type CreateTransactionResponse {
-    # The transaction object that was created.
-    transaction: Transaction!
+type ExchangeRate {
+    rates: [ExchangeRateItem!]!
 }
 
-
-# Response type for soft-deleting a transaction
-type SoftDeleteTransactionResponse {
-    # Indicates if the delete operation was successful
-    success: Boolean!
-
-    # A message describing the result of the operation
-    message: String!
-}
-
-
-
-# Response type for soft-deleting a pointtransaction
-type SoftDeleteTransactionResponse {
-    # Indicates if the delete operation was successful
-    success: Boolean!
-
-    # A message describing the result of the operation
-    message: String!
-}
-
-
-# Response type for the `createTransaction` mutation.
-# This defines the structure of the response returned after creating a transaction.
-type CreatePointTransactionResponse {
-    # The transaction object that was created.
-    transaction: Transaction!
-}
-
-
-# Response type for the `CreateWallet` mutation.
-# This defines the structure of the response returned after creating a wallet.
-type CreateWalletResponse {
-    # The  wallet object that was created.
-    wallet: Wallet!
-}
-
-
-
-# Response type for soft-deleting a Wallet
-type SoftDeleteWalletResponse {
-    # Indicates if the delete operation was successful
-    success: Boolean!
-
-    # A message describing the result of the operation
-    message: String!
-}
-
-
-
-# Response type for soft-deleting a UserBank
-type SoftDeleteUserBankResponse {
-    # Indicates if the delete operation was successful
-    success: Boolean!
-
-    # A message describing the result of the operation
-    message: String!
-}
-
-
-# Response type for the `CreateUserBank` mutation.
-# This defines the structure of the response returned after creating a UserBank.
-type CreateUserBankResponse {
-    # The transaction object that was created.
-    transaction: Transaction!
-}
-
-
-
-type TopupResponse {
-    status: String! # e.g., "success", "failed", "pending"
-    transaction_id: ID! # Unique identifier for the transaction
-    amount: Float! # Top-up amount
-    currency: String! # Currency used for the top-up
-    payment_metadata: JSON # Any additional metadata related to the payment
-    message: String # A descriptive message about the transaction
-}
-
-
-type AuthResponse {
-    token: String! # JWT token for authentication
-    user: User! # Authenticated user details
-
-}
-
-
-type UpdateProfileResponse {
-    success: Boolean!
-    message: String!
-    userProfile: UserProfile
+type ExchangeRateItem {
+    buy: Float!
+    sell: Float!
+    locale: String!
+    rateId: String!
+    code: String!
+    updatedAt: String!
 }

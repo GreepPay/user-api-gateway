@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Models\Notification;
+namespace App\Models\User;
 
 use App\Models\Auth\User;
 use Illuminate\Database\Eloquent\Model;
 use MichaelAChrisco\ReadOnly\ReadOnlyTrait;
 
-class Notification extends Model
+class Customer extends Model
 {
     use ReadOnlyTrait;
 
-    protected $connection = "greep-notification";
+    protected $connection = "greep-user";
 
-    protected $table = "notifications";
+    protected $table = "customers";
 
     public function user()
     {

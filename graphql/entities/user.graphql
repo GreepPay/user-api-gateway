@@ -1,10 +1,27 @@
+extend type Query @guard {
+    "Search users by name"
+    SearchUsers(query: String!): [User!]!
+        @field(resolver: "UserQuery@searchUsers")
+}
+
 extend type Mutation @guard {
-    """
-    Update a user's profile with detailed information
-    """
+    "Update a user's profile with detailed information"
     UpdateProfile(
-        user_type: String!,
-        profile_picture: String,
-        profileData: ProfileDataInput
-    ): UpdateProfileResponse! @field(resolver: "UserMutator@updateProfile")
+        first_name: String
+        profile_photo: Upload
+        last_name: String
+        default_currency: String
+        country: String
+        state: String
+    ): Boolean! @field(resolver: "UserMutator@updateProfile")
+}
+
+extend type Mutation {
+    "Verify user identity"
+    VerifyUserIdentity(
+        user_uuid: String!
+        id_type: String!
+        id_number: String!
+        id_country: String!
+    ): Boolean! @field(resolver: "UserMutator@verifyUserIdentity")
 }
