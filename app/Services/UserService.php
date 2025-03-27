@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Datasource\NetworkHandler;
+use Illuminate\Support\Facades\Log;
 
 class UserService
 {

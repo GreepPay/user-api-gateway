@@ -4,12 +4,14 @@ namespace App\GraphQL\Mutations;
 
 use App\Exceptions\GraphQLException;
 use App\Models\Auth\User;
+use App\Models\Wallet\Wallet;
 use App\Services\AuthService;
 use App\Services\BlockchainService;
 use App\Services\NotificationService;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 final class AuthMutator
@@ -38,12 +40,12 @@ final class AuthMutator
             "password" => $args["password"],
         ]);
 
-        $authUser = $authUser["data"]["user"];
+        $authUser = $authUser["data"];
 
         // Create a default profile for the user
         $this->userService->createProfile([
             "user_type" => "Customer",
-            "auth_user_id" => $authUser["id"],
+            "auth_user_id" => (string) $authUser["id"],
             "default_currency" => $args["default_currency"],
             "profileData" => [
                 "country" => $args["country"],
@@ -52,21 +54,25 @@ final class AuthMutator
         ]);
 
         // Let create a default wallet for the user
+        // Check if user has a wallet already
+        $userWallet = Wallet::where("user_id", $authUser["id"])->first();
 
-        // But before creating the wallet, a need an account to be generated on the blockchain for the new user
-        $blockchainAccount = $this->blockchainService->createAccount([
-            "account_type" => "user",
-            "status" => "inactive",
-        ]);
+        if (!$userWallet) {
+            // But before creating the wallet, a need an account to be generated on the blockchain for the new user
+            $blockchainAccount = $this->blockchainService->createAccount([
+                "account_type" => "user",
+                "status" => "closed",
+            ]);
 
-        $blockchainAccount = $blockchainAccount["data"];
+            $blockchainAccount = $blockchainAccount["data"];
 
-        // Create a default wallet for the user
-        $this->walletService->createWallet([
-            "user_id" => $authUser["id"],
-            "blockchain_account_id" => $blockchainAccount["id"],
-            "currency" => "USDC",
-        ]);
+            // Create a default wallet for the user
+            $this->walletService->createWallet([
+                "user_id" => $authUser["id"],
+                "blockchain_account_id" => $blockchainAccount["id"],
+                "currency" => "USDC",
+            ]);
+        }
 
         // Send a verify email notification to the user
         // TODO: Implement email verification notification
