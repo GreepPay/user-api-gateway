@@ -107,7 +107,7 @@ return [
             "sslmode" => env("DB_SSLMODE")
                 ? env("DB_SSLMODE", "disable")
                 : null,
-            "sslcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
+            "sslrootcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
         ],
         "greep-user" => [
             "driver" => "pgsql",
@@ -123,7 +123,7 @@ return [
             "sslmode" => env("DB_SSLMODE")
                 ? env("DB_SSLMODE", "disable")
                 : null,
-            "sslcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
+            "sslrootcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
         ],
         "greep-notification" => [
             "driver" => "pgsql",
@@ -139,7 +139,7 @@ return [
             "sslmode" => env("DB_SSLMODE")
                 ? env("DB_SSLMODE", "disable")
                 : null,
-            "sslcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
+            "sslrootcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
         ],
         "greep-wallet" => [
             "driver" => "pgsql",
@@ -155,7 +155,7 @@ return [
             "sslmode" => env("DB_SSLMODE")
                 ? env("DB_SSLMODE", "disable")
                 : null,
-            "sslcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
+            "sslrootcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
         ],
         "greep-blockchain" => [
             "driver" => "pgsql",
@@ -171,7 +171,7 @@ return [
             "sslmode" => env("DB_SSLMODE")
                 ? env("DB_SSLMODE", "disable")
                 : null,
-            "sslcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
+            "sslrootcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
         ],
     ],
 
