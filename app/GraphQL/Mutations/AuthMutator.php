@@ -92,7 +92,10 @@ final class AuthMutator
 
         return [
             "token" => $userAuth["data"]["token"],
-            "user" => User::where("id", $userAuth["data"]["id"])->first(),
+            "user" => User::where(
+                "id",
+                $userAuth["data"]["user"]["id"]
+            )->first(),
         ];
     }
 
