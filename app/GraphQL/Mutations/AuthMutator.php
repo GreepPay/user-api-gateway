@@ -85,7 +85,7 @@ final class AuthMutator
 
     public function signIn($_, array $args): User
     {
-        $userAuth = $this->authService->signIn([
+        $userAuth = $this->authService->authenticateUser([
             "username" => $args["email"],
             "password" => $args["password"],
         ]);
