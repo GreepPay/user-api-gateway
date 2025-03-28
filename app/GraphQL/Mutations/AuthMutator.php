@@ -9,6 +9,7 @@ use App\Services\AuthService;
 use App\Services\BlockchainService;
 use App\Services\NotificationService;
 use App\Services\UserService;
+use App\Services\WalletService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -20,6 +21,7 @@ final class AuthMutator
     protected $notificationService;
     protected $userService;
     protected $blockchainService;
+    protected $walletService;
 
     public function __construct()
     {
@@ -27,6 +29,7 @@ final class AuthMutator
         $this->notificationService = new NotificationService();
         $this->userService = new UserService();
         $this->blockchainService = new BlockchainService();
+        $this->walletService = new WalletService();
     }
 
     // Sign Up

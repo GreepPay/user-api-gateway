@@ -1,4 +1,4 @@
-extend type Query @guard {
+extend type Query {
     "Search users by name"
     SearchUsers(query: String!): [User!]!
         @field(resolver: "UserQuery@searchUsers")

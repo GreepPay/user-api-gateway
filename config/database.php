@@ -104,8 +104,10 @@ return [
             "prefix" => "",
             "prefix_indexes" => true,
             "schema" => "public",
-            "sslmode" => env("DB_SSLMODE", "prefer"),
-            "sslcert" => env("DB_SSLCERT", ""),
+            "sslmode" => env("DB_SSLMODE")
+                ? env("DB_SSLMODE", "disable")
+                : null,
+            "sslcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
         ],
         "greep-user" => [
             "driver" => "pgsql",
@@ -118,8 +120,10 @@ return [
             "prefix" => "",
             "prefix_indexes" => true,
             "schema" => "public",
-            "sslmode" => env("DB_SSLMODE", "prefer"),
-            "sslcert" => env("DB_SSLCERT", ""),
+            "sslmode" => env("DB_SSLMODE")
+                ? env("DB_SSLMODE", "disable")
+                : null,
+            "sslcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
         ],
         "greep-notification" => [
             "driver" => "pgsql",
@@ -132,8 +136,10 @@ return [
             "prefix" => "",
             "prefix_indexes" => true,
             "schema" => "public",
-            "sslmode" => env("DB_SSLMODE", "prefer"),
-            "sslcert" => env("DB_SSLCERT", ""),
+            "sslmode" => env("DB_SSLMODE")
+                ? env("DB_SSLMODE", "disable")
+                : null,
+            "sslcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
         ],
         "greep-wallet" => [
             "driver" => "pgsql",
@@ -146,8 +152,10 @@ return [
             "prefix" => "",
             "prefix_indexes" => true,
             "schema" => "public",
-            "sslmode" => env("DB_SSLMODE", "prefer"),
-            "sslcert" => env("DB_SSLCERT", ""),
+            "sslmode" => env("DB_SSLMODE")
+                ? env("DB_SSLMODE", "disable")
+                : null,
+            "sslcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
         ],
         "greep-blockchain" => [
             "driver" => "pgsql",
@@ -160,8 +168,10 @@ return [
             "prefix" => "",
             "prefix_indexes" => true,
             "schema" => "public",
-            "sslmode" => env("DB_SSLMODE", "prefer"),
-            "sslcert" => env("DB_SSLCERT", ""),
+            "sslmode" => env("DB_SSLMODE")
+                ? env("DB_SSLMODE", "disable")
+                : null,
+            "sslcert" => env("DB_SSLCERT") ? env("DB_SSLCERT", "") : null,
         ],
     ],
 
