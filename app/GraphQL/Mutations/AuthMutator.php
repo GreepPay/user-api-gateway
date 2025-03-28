@@ -83,7 +83,7 @@ final class AuthMutator
         return User::where("id", $authUser["id"])->first();
     }
 
-    public function signIn($_, array $args): User
+    public function signIn($_, array $args)
     {
         $userAuth = $this->authService->authenticateUser([
             "username" => $args["email"],
